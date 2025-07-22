@@ -1,0 +1,7 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript" // MEMO: 바벨의 타입스크립트 프리셋('@babel/preset-typescript')을 웹팩의 타입스크립트 로더(ts-loader)가 대신할 수 있다.
+  ]
+}

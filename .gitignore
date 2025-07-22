@@ -1,0 +1,15 @@
+# dependencies
+/node_modules
+
+# setting
+.vscode/settings.json
+
+# build
+/build
+/dist
+
+# .env
+.env
+
+# etc
+.eslintcache

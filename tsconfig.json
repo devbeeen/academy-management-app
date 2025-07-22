@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "paths": {
+      //
+    },
+    // "target": "es5",
+    "target": "es6",
+    "module": "CommonJS",
+    // "module": "esnext", // next.js
+    "lib": ["dom", "dom.iterable", "esnext"],
+    // "baseUrl": "./src",
+    "allowJs": true,
+    "jsx": "preserve",
+    "sourceMap": true, // MEMO: 코드 디버그 지원
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "incremental": true,
+    // "strictNullChecks": true // 엄격하게 Null과 Undefined 서로의 타입까지 더 이상 할당할 수 없게 합니다.
+    "outDir": "./dist" // MEMO: 컴파일 경로
+  },
+  "include": [
+    "src",
+    "docs/login.js",
+    "test/jestPractice",
+    "src/components/Mainbar/Category/ApartmentManagementSub/.tsx"
+  ],
+  // "include": ["src", "next-env.d.ts", "**/*.ts", "**/*.tsx"], // next.js
+  "exclude": ["node_modules"],
+  "typeRoots": ["./types", "./types"]
+}
