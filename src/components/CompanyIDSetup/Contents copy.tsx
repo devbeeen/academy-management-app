@@ -196,6 +196,13 @@ export const Contents = () => {
       }
       */
     }
+
+    // const { data, error } = await supabase.from('user_profile').select('*');
+    // // setSelectedUser(data);
+    // console.log('data: ', data);
+    // const dataFoo =
+    //   loggedInUser.user &&
+    //   data.filter(item => item.id === loggedInUser.user.id);
   };
 
   const companyValue = e => {

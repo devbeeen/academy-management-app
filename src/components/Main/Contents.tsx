@@ -59,11 +59,11 @@ export const Contents = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const { data, error } = await supabase.from('user_profile').select('*');
-      console.log('🍜userData: ', userList.user && userList.user.id);
-      console.log('🍜data: ', data);
+      console.log('userData: ', userList.user && userList.user.id);
+      console.log('data: ', data);
 
       if (error) {
-        console.error('Supabase 연동 실패:', error);
+        console.error('user_profile 가져오기 실패:', error);
       }
 
       const dataFoo =
@@ -74,19 +74,10 @@ export const Contents = () => {
     fetchUserData();
   }, [userList]);
 
-  /*
-  if (loggedInUser && !loggedInUser.company_code) {
-    console.log('회사코드 없음');
-    // navigate('/company-setup');
+  if (loggedInUser && loggedInUser[0]) {
+    console.log('!loggedInUser[0].company_code: 회사 코드 없음');
+    if (!loggedInUser[0].company_code) return navigate('/company-setup');
   }
-  */
-
-  // console.log('💻💻: ', loggedInUser && !loggedInUser.company_code);
-  console.log('🍟🍟loggedInUser: ', loggedInUser && loggedInUser);
-  console.log(
-    '🍟loggedInUser-company_Code: ',
-    loggedInUser && loggedInUser[0]?.company_code,
-  );
 
   // MEMO: 로그아웃
   const onSignOut = async () => {
