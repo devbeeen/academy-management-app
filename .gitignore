@@ -13,3 +13,5 @@
 
 # etc
 .eslintcache
+
+/public/data
