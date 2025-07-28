@@ -2,15 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 
-import axios from 'axios';
 import { supabase } from '../../supabaseClient';
 
 export const Contents = () => {
   const [userID, setUserID] = useState();
   const [userPW, setUserPW] = useState();
-
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const convertIdToEmail = (id: string) => `${id}@fake.com`;
 
@@ -40,7 +36,7 @@ export const Contents = () => {
         }
       */
 
-    // 회원가입 요청 → 인증 메일 발송됨
+    // 회원가입 요청 → 인증 메일 발송됨 (현재 인증 없이 가입 가능한 상태)
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: userID,
       password: userPW,

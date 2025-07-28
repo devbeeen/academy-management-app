@@ -74,13 +74,15 @@ export const Contents = () => {
     fetchUserData();
   }, [userList]);
 
+  console.log('loggedInUser: ', loggedInUser);
+
   if (loggedInUser && loggedInUser[0]) {
-    console.log('!loggedInUser[0].company_code: 회사 코드 없음');
+    // console.log('!loggedInUser[0].company_code 회사 코드 없음');
     if (!loggedInUser[0].company_code) return navigate('/company-setup');
   }
 
   // MEMO: 로그아웃
-  const onSignOut = async () => {
+  const handleSignOut = async () => {
     onSignOut();
     navigate('/login');
   };
@@ -90,7 +92,7 @@ export const Contents = () => {
       <button
         label="로그아웃"
         style={{ border: 'solid 1px black', height: '60px' }}
-        onClick={onSignOut}
+        onClick={handleSignOut}
       >
         로그아웃
       </button>

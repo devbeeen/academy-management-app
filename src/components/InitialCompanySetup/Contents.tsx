@@ -153,7 +153,6 @@ export const Contents = () => {
       //     console.error('companies-insert 에러:', companiesError);
       //   }
       // }
-
       // // ☝ ---------------
 
       // company_code를 -> 회사 테이블의 company_code로 insert
@@ -195,6 +194,8 @@ export const Contents = () => {
         console.error('companies-insert 에러:', companiesError);
       }
       */
+
+      navigate('/');
     }
   };
 

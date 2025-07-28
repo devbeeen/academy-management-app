@@ -14,34 +14,30 @@ export const Contents = () => {
   const [userID, setUserID] = useState();
   const [userPW, setUserPW] = useState();
 
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   const idValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('입력: ', e.target.value);
+    console.log('id 입력: ', e.target.value);
     setUserID(e.target.value);
   };
   console.log('userID: ', userID);
 
   const pwValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('입력: ', e.target.value);
+    console.log('pw 입력: ', e.target.value);
     setUserPW(e.target.value);
   };
 
   const onLogin = async e => {
     e.preventDefault();
-    //
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: userID,
       password: userPW,
     });
 
     if (error) {
-      console.error('로그인 실패: ' + error.message);
+      console.error('로그인 실패: ', error.message);
       return;
     }
 
-    console.log('🚀로그인 성공:', data.user);
     navigate('/');
   };
 
@@ -90,7 +86,7 @@ export const Contents = () => {
         <button
           label="로그인"
           onClick={onLogin}
-          style={{ border: 'solid 1px black', height: '60px' }}
+          style={{ border: 'solid 1px black', width: '80px', height: '60px' }}
         >
           로그인
         </button>
@@ -98,7 +94,7 @@ export const Contents = () => {
       <button
         label="회원가입"
         onClick={() => navigate('/join')}
-        style={{ border: 'solid 1px black', height: '60px' }}
+        style={{ border: 'solid 1px black', width: '80px', height: '60px' }}
       >
         회원가입
       </button>
