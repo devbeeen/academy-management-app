@@ -69,7 +69,7 @@ export const Contents = () => {
           <label>ID</label>
           <input
             placeholder="아이디(메일)를 입력해주세요"
-            style={{ border: 'solid 1px black', height: '60px' }}
+            style={{ height: '60px', border: 'solid 1px black' }}
             onChange={idValue}
           />
         </S.ItemBox>
@@ -78,7 +78,7 @@ export const Contents = () => {
           <label>PW</label>
           <input
             placeholder="비밀번호를 입력해주세요"
-            style={{ border: 'solid 1px black', height: '60px' }}
+            style={{ height: '60px', border: 'solid 1px black' }}
             onChange={pwValue}
           />
         </S.ItemBox>
@@ -86,7 +86,7 @@ export const Contents = () => {
         <button
           label="로그인"
           onClick={onLogin}
-          style={{ border: 'solid 1px black', width: '80px', height: '60px' }}
+          style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
         >
           로그인
         </button>
@@ -94,7 +94,7 @@ export const Contents = () => {
       <button
         label="회원가입"
         onClick={() => navigate('/join')}
-        style={{ border: 'solid 1px black', width: '80px', height: '60px' }}
+        style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
       >
         회원가입
       </button>

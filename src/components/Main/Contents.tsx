@@ -4,19 +4,20 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { onSignOut } from '../../lib/utils/onSignOut'; // 로그아웃
 
+import useUserStore from '../../store/userStore';
+
+import { useShallow } from 'zustand/react/shallow';
+import { persist } from 'zustand/middleware'; // persist 미들웨어
+
 export const Contents = () => {
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState([]);
 
-  useEffect(() => {
-    /*
-    const runSequence = async () => {
-      await getUser();
-      await fetchUserData();
-    };
-    */
+  // zustand를 활용하여 세션 스토리지에 로그인한 유저 정보 저장
+  const setUser = useUserStore(state => state.setUser);
 
+  useEffect(() => {
     const getUser = async () => {
       // 현재 로그인한 유저 정보 가져오기
       const { data, error } = await supabase.auth.getUser();
@@ -27,7 +28,7 @@ export const Contents = () => {
         return;
       }
 
-      // 로그인한 유저에게(=데이터가 존재하는 유저에게), insert 시도
+      // 로그인한 유저에게(=데이터가 존재하는 유저에게), insert 시도 -> user_profile 테이블에 데이터 삽입
       if (data.user) {
         await supabase.from('user_profile').insert({
           id: data.user.id,
@@ -40,23 +41,11 @@ export const Contents = () => {
       }
     };
 
-    /*
-    const fetchUserData = async () => {
-      const { data, error } = await supabase.from('user_profile').select('*');
-      console.log('data: ', data);
-
-      if (error) {
-        console.error('Supabase 연동 실패:', error);
-      }
-    };
-    */
-
     getUser();
-    // fetchUserData();
-    // runSequence();
   }, []);
 
   useEffect(() => {
+    // user_profile 테이블 데이터 가져오기
     const fetchUserData = async () => {
       const { data, error } = await supabase.from('user_profile').select('*');
       console.log('userData: ', userList.user && userList.user.id);
@@ -74,6 +63,26 @@ export const Contents = () => {
     fetchUserData();
   }, [userList]);
 
+  useEffect(() => {
+    const getUserSession = () => {
+      // getUserSession(): zustand를 활용하여 세션 스토리지에 로그인한 유저 정보 저장
+      console.log('✅✅loggedInUser: ', loggedInUser);
+
+      if (loggedInUser && loggedInUser[0]) {
+        setUser({
+          id: loggedInUser[0].id,
+          name: loggedInUser[0].name,
+          companyID: loggedInUser[0].company_id,
+          companyCode: loggedInUser[0].company_code,
+          companyName: loggedInUser[0].company_name,
+        });
+      }
+      console.log('!!! 정보 저장');
+    };
+
+    getUserSession();
+  }, [loggedInUser]);
+
   console.log('loggedInUser: ', loggedInUser);
 
   if (loggedInUser && loggedInUser[0]) {
@@ -87,17 +96,49 @@ export const Contents = () => {
     navigate('/login');
   };
 
+  const pullData = useUserStore(
+    useShallow(state => ({
+      name: state.name,
+    })),
+  );
+
+  // const checkData = useUserStore(useShallow(state => Object.keys(state)));
+  const checkData = () => {
+    console.log('userStore 데이터 확인(name): ', pullData.name);
+  };
+
+  // 세션스토리지의 user-storage 삭제
+  const deleteData = () => {
+    localStorage.removeItem('user-storage');
+  };
+
   return (
     <div>
       <button
         label="로그아웃"
-        style={{ border: 'solid 1px black', height: '60px' }}
+        style={{ height: '60px', border: 'solid 1px black' }}
         onClick={handleSignOut}
       >
         로그아웃
       </button>
 
       <div>이름</div>
+
+      <button
+        label="저장된 데이터 확인"
+        style={{ height: '60px', border: 'solid 1px black' }}
+        onClick={checkData}
+      >
+        저장 확인
+      </button>
+
+      <button
+        label="세션 정보 삭제"
+        style={{ height: '60px', border: 'solid 1px black' }}
+        onClick={deleteData}
+      >
+        세션 삭제
+      </button>
     </div>
   );
 };

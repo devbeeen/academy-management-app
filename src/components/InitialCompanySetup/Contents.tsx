@@ -210,13 +210,13 @@ export const Contents = () => {
       <label>학원명</label>
       <input
         placeholder="학원 이름을 입력해주세요"
-        style={{ border: 'solid 1px black', height: '60px' }}
+        style={{ height: '60px', border: 'solid 1px black' }}
         onChange={companyValue}
       />
       <button
         label="확인"
         onClick={onCompanyCodeSetup}
-        style={{ border: 'solid 1px black', width: '80px', height: '60px' }}
+        style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
       >
         확인
       </button>
