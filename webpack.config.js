@@ -57,17 +57,13 @@ module.exports = env => {
       ],
     },
     resolve: {
-      fallback: {
-        path: require.resolve('path-browserify'),
-        os: require.resolve('os-browserify/browser'),
-      },
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
     plugins: [
       new HtmlWebpackPlugin({
         template: './public/index.html',
         filename: 'index.html',
-        // favicon: './public/data/navbar-logo.png', // MEMO: 파비콘
+        // favicon: './public/data/favicon.png', // MEMO: 파비콘
       }),
       new MiniCssExtractPlugin({
         filename: './[name].css',
