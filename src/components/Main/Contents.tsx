@@ -6,8 +6,7 @@ import { onSignOut } from '../../lib/utils/onSignOut'; // 로그아웃
 
 import useUserStore from '../../store/userStore';
 
-import { useShallow } from 'zustand/react/shallow';
-import { persist } from 'zustand/middleware'; // persist 미들웨어
+import { useShallow } from 'zustand/react/shallow'; // 얕은 저장?
 
 export const Contents = () => {
   const navigate = useNavigate();
@@ -18,6 +17,13 @@ export const Contents = () => {
   const setUser = useUserStore(state => state.setUser);
 
   useEffect(() => {
+    /*
+    const runSequence = async () => {
+      await getUser();
+      await fetchUserData();
+    };
+    */
+
     const getUser = async () => {
       // 현재 로그인한 유저 정보 가져오기
       const { data, error } = await supabase.auth.getUser();
@@ -28,7 +34,8 @@ export const Contents = () => {
         return;
       }
 
-      // 로그인한 유저에게(=데이터가 존재하는 유저에게), insert 시도 -> user_profile 테이블에 데이터 삽입
+      // 로그인한 유저에게(=인증 데이터가 존재하는 유저에게), insert -> user_profile 테이블에 데이터 삽입
+
       if (data.user) {
         await supabase.from('user_profile').insert({
           id: data.user.id,
@@ -42,6 +49,7 @@ export const Contents = () => {
     };
 
     getUser();
+    // runSequence();
   }, []);
 
   useEffect(() => {
@@ -58,9 +66,13 @@ export const Contents = () => {
       const dataFoo =
         userList.user && data.filter(item => item.id === userList.user.id);
       setLoggedInUser(dataFoo);
+
+      // zustand를 활용하여 세션 스토리지에 로그인한 유저 정보 저장
+      // const setUser = useUserStore(state => state.setUser);
     };
 
     fetchUserData();
+    // runSequence();
   }, [userList]);
 
   useEffect(() => {
@@ -69,6 +81,8 @@ export const Contents = () => {
       console.log('✅✅loggedInUser: ', loggedInUser);
 
       if (loggedInUser && loggedInUser[0]) {
+        console.log('✅✅loggedInUser 22222: ', loggedInUser[0].id);
+
         setUser({
           id: loggedInUser[0].id,
           name: loggedInUser[0].name,
@@ -85,10 +99,16 @@ export const Contents = () => {
 
   console.log('loggedInUser: ', loggedInUser);
 
-  if (loggedInUser && loggedInUser[0]) {
-    // console.log('!loggedInUser[0].company_code 회사 코드 없음');
-    if (!loggedInUser[0].company_code) return navigate('/company-setup');
-  }
+  // 👇 회사코드 없으면, 초기 회사 설정 페이지로 이동 -----
+  useEffect(() => {
+    if (loggedInUser && loggedInUser[0]) {
+      if (!loggedInUser[0].company_code) {
+        alert('회사 설정을 먼저 해주세요');
+        navigate('/company-setup');
+      }
+    }
+  }, [loggedInUser, navigate]);
+  // ☝ 회사코드 없으면, 초기 회사 설정 페이지로 이동 -----
 
   // MEMO: 로그아웃
   const handleSignOut = async () => {
@@ -109,8 +129,13 @@ export const Contents = () => {
 
   // 세션스토리지의 user-storage 삭제
   const deleteData = () => {
-    localStorage.removeItem('user-storage');
+    useUserStore.persist.clearStorage();
   };
+
+  // useUserStore 저장 확인
+  // useUserStore.subscribe(state => {
+  //   console.log('저장된 상태:', state);
+  // });
 
   return (
     <div>
@@ -123,6 +148,14 @@ export const Contents = () => {
       </button>
 
       <div>이름</div>
+
+      <button
+        label="정보 저장"
+        style={{ height: '60px', border: 'solid 1px black' }}
+        // onClick={insertFoo}
+      >
+        정보 저장
+      </button>
 
       <button
         label="저장된 데이터 확인"
