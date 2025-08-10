@@ -1,17 +1,26 @@
+// 수강생 등록 컴포넌트
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
+
+import useUserStore from '../../store/userStore';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Contents as DailyAttendance } from '../DailyAttendance/Contents';
 
 export const Contents = () => {
   const [attendanceData, setAttendanceData] = useState([]);
-
   const [memberName, setMemberName] = useState();
 
-  const companyID = '';
+  // 👇 userStore(로그인 유저 정보) 불러오기 -----
+  const pullData = useUserStore(useShallow(state => state));
+  console.log('pullData', pullData);
+  // ☝ userStore(로그인 유저 정보) 불러오기 -----
+
+  const companyID = pullData.companyID;
+  console.log('companyID: ', companyID);
 
   useEffect(() => {
-    //
     const getAttendanceData = async () => {
       const { data, error } = await supabase.from('attendance').select('*');
       console.log('data: ', data);
@@ -26,14 +35,11 @@ export const Contents = () => {
     getAttendanceData();
   }, []);
 
-  // console.log('attendanceData: ', attendanceData);
-
   const memberNameValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('member name 입력: ', e.target.value);
     setMemberName(e.target.value);
   };
 
-  // ----------------------------------
   // 수강생 등록 함수
   // const registerStudent = async (memberName: string) => {
   const registerStudent = async () => {
@@ -70,10 +76,9 @@ export const Contents = () => {
           />
         </div>
         <button
-          label="등록"
+          label="수강생 등록"
           style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
-          // onClick={onCompanyCodeSetup}
-          onClick={() => registerStudent()}
+          // onClick={() => registerStudent()}
         >
           등록
         </button>

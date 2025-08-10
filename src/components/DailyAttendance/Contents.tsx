@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 
+import useUserStore from '../../store/userStore';
+import { useShallow } from 'zustand/react/shallow';
+
 export const Contents = ({ attendanceData }) => {
   console.log('attendanceData', attendanceData);
+
+  // const pullData = useUserStore(
+  //   useShallow(state => ({
+  //     name: state.id,
+  //   })),
+  // );
+  const pullData = useUserStore(useShallow(state => state));
+
+  console.log('pullData', pullData);
 
   /**
    * [MEMO] headerMinutesArray: 헤더(분, 10분 단위). 하루를 10분 단위로 나누어 나타냄(시간당 6칸(총 144개)).

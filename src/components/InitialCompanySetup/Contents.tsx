@@ -13,10 +13,6 @@ export const Contents = () => {
 
   const navigate = useNavigate();
 
-  if (false) {
-    console.log('계정이 존재하는 사용자');
-  }
-
   useEffect(() => {
     // 현재 로그인한 유저 정보 가져오기(auth)
     const getUser = async () => {
@@ -47,12 +43,21 @@ export const Contents = () => {
   }, []);
 
   useEffect(() => {
-    // 회사 코드 체크
+    console.log('🔥getCompanyCode 호출됨 111');
+    // 회사 코드 체크 (앞 번호부터 차례로 체크하여 없는 번호가, 현재 회사의 code가 됨)
     const getCompanyCode = () => {
-      const codeList = companyList.map(item => Number(item.company_code));
+      console.log('🔥getCompanyCode 호출됨 222');
+      // const codeList = companyList.map(item => Number(item.company_code));
+      const codeList = companyList.map(item => Number(item.code));
+
+      companyList.map(item => {
+        console.log('🔥🔥codeList-item:', item.code);
+        // console.log('🔥🔥includes 1?', item.company_code.includes(1));
+      });
 
       let initial = 1;
       while (codeList.includes(initial)) {
+        console.log('🔥initial: ', initial);
         initial++;
       }
       setCompanyCode(initial);
@@ -61,17 +66,27 @@ export const Contents = () => {
     getCompanyCode();
   }, [companyList]);
 
+  useEffect(() => {
+    console.log('🔥companyList 변경:', companyList);
+  }, [companyList]);
+
+  useEffect(() => {
+    console.log('🥰companyCode changed: ', companyCode);
+  }, [companyCode]);
+
   console.log('companyList: ', companyList);
   console.log('loggedInUser: ', loggedInUser);
 
   const onCompanyCodeSetup = async e => {
     e.preventDefault();
-    console.log('loggedInUser: ', loggedInUser);
+    console.log('🌸loggedInUser: ', loggedInUser.user.id);
+    console.log('🌸companyCode: ', companyCode);
 
     if (loggedInUser.user) {
-      const { data, error } = await supabase.from('user_profile').insert({
-        id: loggedInUser.user.id,
-        email: loggedInUser.user.email,
+      // user_profile 테이블에 upsert (정보 저장) (insert는 메인페이지(id, mail) -> 회사코드 없으면, 현재 페이지인 회사등록 페이지로)
+      const { data, error } = await supabase.from('user_profile').upsert({
+        // id: loggedInUser.user.id,
+        // email: loggedInUser.user.email,
         company_code: companyCode.toString(),
         company_name: companyName,
       });
@@ -80,8 +95,7 @@ export const Contents = () => {
         console.error('user_profile insert 에러:', error);
       }
 
-      // ---------------------------
-      // 현재 로그인한 사용자가 이미 회사 코드를 보유한 경우 -> 등록하지 않음
+      // 👇 현재 로그인한 사용자가 이미 회사 코드를 보유한 경우 -> 등록하지 않음 -----
       // 로그인한 사용자의 프로필 조회
       const { data: existingProfile, error: profileError } = await supabase
         .from('user_profile')
@@ -89,16 +103,15 @@ export const Contents = () => {
         .eq('id', loggedInUser.user.id)
         .maybeSingle();
       // .single();
-
       console.log('existingProfile', existingProfile);
 
       if (profileError) {
         console.error('user_profile 회사 코드 조회 실패:', profileError);
         return;
       }
-      // ---------------------------
+      // ☝ 현재 로그인한 사용자가 이미 회사 코드를 보유한 경우 -> 등록하지 않음 -----
 
-      // 👇 ---------------
+      // 👇 companies 테이블이 insert (정보 저장) -----
       const { error: companiesInsertError } = await supabase
         .from('companies')
         .insert({
@@ -110,10 +123,9 @@ export const Contents = () => {
       if (companiesInsertError) {
         console.error('companies insert 에러:', companiesInsertError);
       }
-      // ☝ ---------------
+      // ☝ companies 테이블이 insert (정보 저장) -----
 
-      // ---------------------------
-      // 회사 코드 조회
+      // 👇 companies 테이블에 저장된 회사 코드 조회 -----
       const { data: existingCompany, error: companyCheckError } = await supabase
         .from('companies')
         .select('code')
@@ -121,9 +133,9 @@ export const Contents = () => {
         .maybeSingle();
 
       console.log('🧓🧓🧓existingCompany', existingCompany);
-      // ---------------------------
+      // ☝ companies 테이블에 저장된 회사 코드 조회 -----
 
-      // 👇👇 ---------------
+      // 👇 회사코드가 이미 등록되어 있으면 return -----
       // 회사코드가 이미 등록되어 있으면 중단
       console.error('🎅🎅:', existingProfile && existingProfile.company_code);
       console.error(
@@ -136,66 +148,9 @@ export const Contents = () => {
         console.log('이미 회사 코드가 등록된 사용자입니다.');
         return; // 등록 중단
       }
-      // ☝☝ --------------
+      // ☝ 회사코드가 이미 등록되어 있으면 return -----
 
-      // // ---------------------------
-      // // 👇 ---------------
-      // else if (!existingProfile.company_code) {
-      //   const { error: companiesError } = await supabase
-      //     .from('companies')
-      //     .insert({
-      //       created_by: loggedInUser.user.id,
-      //       code: companyCode.toString(),
-      //       name: companyName,
-      //     });
-
-      //   if (companiesError) {
-      //     console.error('companies-insert 에러:', companiesError);
-      //   }
-      // }
-      // // ☝ ---------------
-
-      // company_code를 -> 회사 테이블의 company_code로 insert
-      // const { error: companiesError } = await supabase
-      //   .from('companies')
-      //   .insert({
-      //     created_by: loggedInUser.user.id,
-      //     code: companyCode.toString(),
-      //     name: companyName,
-      //   });
-
-      // if (companiesError) {
-      //   console.error('companies-insert 에러:', companiesError);
-      // }
-
-      /*
-      // await supabase.from('user_profile').insert({});
-      const { data, error } = await supabase.from('user_profile').insert({
-        id: loggedInUser.user.id,
-        email: loggedInUser.user.email,
-        company_code: companyCode.toString(),
-        company_name: companyName,
-      });
-
-      if (error) {
-        console.error('upsert 에러:', error);
-      }
-
-      // company_code를 -> 회사 테이블의 company_code로 insert
-      const { error: companiesError } = await supabase
-        .from('companies')
-        .insert({
-          created_by: loggedInUser.user.id,
-          code: companyCode.toString(),
-          name: companyName,
-        });
-
-      if (companiesError) {
-        console.error('companies-insert 에러:', companiesError);
-      }
-      */
-
-      navigate('/');
+      // navigate('/');
     }
   };
 

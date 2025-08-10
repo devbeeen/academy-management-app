@@ -41,22 +41,6 @@ export const Contents = () => {
     navigate('/');
   };
 
-  /*
-  const onLogin = async e => {
-    //
-    await axios({
-      url: `url`,
-      method: 'post',
-      data: {
-        userID: userID,
-        userPW: userPW,
-      },
-    }).then(res => {
-      console.log('res.data: ', res.data);
-    });
-  };
-  */
-
   return (
     <S.Section>
       <div>로그인 페이지</div>

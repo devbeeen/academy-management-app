@@ -1,7 +1,16 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-const useUserStore = create(
+type UserState = {
+  id: string;
+  companyID: string;
+  loginID: string;
+  name: string;
+  companyName: string;
+  setUser: (data: Partial<UserState>) => void;
+};
+
+const useUserStore = create<UserState>()(
   persist(
     set => ({
       id: '',
@@ -9,12 +18,12 @@ const useUserStore = create(
       loginID: '',
       name: '',
       companyName: '',
-      dataFoo: '',
-      setUser: data => set(data),
+      // setUser: data => set(data),
+      setUser: data => set(state => ({ ...state, ...data })),
     }),
     {
       name: 'user-storage', // 스토리지 이름
-      getStorage: () => sessionStorage, // 디폴트는 localStorage
+      storage: createJSONStorage(() => sessionStorage), // 디폴트는 localStorage
     },
   ),
 );
