@@ -1,6 +1,6 @@
 // 수강생 등록 컴포넌트
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
 
 import useUserStore from '../../store/userStore';
@@ -11,26 +11,33 @@ import { Contents as DailyAttendance } from '../DailyAttendance/Contents';
 import { Modal } from '../../lib/UI/Modal/Modal';
 import { toKST } from '../../lib/utils/toKST';
 
+import { DayPicker } from 'react-day-picker'; // 💐
+
 export const Contents = () => {
   const [memberName, setMemberName] = useState(); // 수강생 이름(등록을 위한)
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false); // 수강생 등록 모달
   const [isOpen, setIsOpen] = useState(false); // 출결시간 등록 모달
-  const [attendanceData, setAttendanceData] = useState([]);
 
-  // 👇 userStore(로그인 유저 정보) 불러오기
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+
+  const [selected, setSelected] = useState<Date>(); // 💐
+  const [month, setMonth] = useState(new Date()); // 💐
+  const ref = useRef<HTMLDivElement>(null); // 💐
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false); //
+
   const fetchUserStore = useUserStore(useShallow(state => state));
   console.log('fetchUserStore', fetchUserStore);
-  // ☝ userStore(로그인 유저 정보) 불러오기
 
   const currentCompanyID = fetchUserStore.companyID;
-  // console.log('fetchUserStore.companyID: ', companyID);
 
   const memberNameValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('member name 입력: ', e.target.value);
     setMemberName(e.target.value);
   };
 
-  // 👇 수강생 등록 함수
-  const onRegisterMember = async () => {
+  // 수강생 등록 함수
+  const onAddMember = async () => {
     const { data, error } = await supabase
       .from('members') // 테이블명
       .insert([
@@ -46,7 +53,8 @@ export const Contents = () => {
       console.log('수강생 등록 성공:', data);
     }
   };
-  // ☝ 수강생 등록 함수
+
+  // 수강생 불러오기
   const [memberList, setMemberList] = useState([]);
   const onFetchMemberList = async () => {
     const { data, error } = await supabase
@@ -58,7 +66,8 @@ export const Contents = () => {
       attendance_status (*)
       )`,
       )
-      .eq('company_id', currentCompanyID);
+      .eq('company_id', currentCompanyID)
+      .eq('attendance.date', '2025-07-28');
     setMemberList(data);
 
     console.log('members 테이블 데이터:', data);
@@ -68,6 +77,9 @@ export const Contents = () => {
     }
   };
 
+  const tableHeader: {
+    time: number;
+  }[] = [];
   const maxMinute = 143;
 
   for (let i = 0; i <= maxMinute; i++) {
@@ -92,14 +104,10 @@ export const Contents = () => {
             progressTime++
           ) {
             memberItem.attendance.forEach(attendanceItem => {
-              // 🔥🔥🔥
+              // console.log('attendanceItem: ', attendanceItem);
+
               let perTimeData = attendanceItem.attendance_status.map(
                 statusItem => {
-                  /**
-                   * checkInTimeHour, checkInTimeMinute:
-                   * 시작 시간(시, 분 단위)만 추출 + undefined인 경우 빈 문자열 반환(분기 처리).
-                   */
-                  // 2025-07-28T09:30:00+00:00
                   const checkInTimeHour = statusItem.check_in_time
                     ? toKST(statusItem.check_in_time).slice(11, 13)
                     : '';
@@ -134,10 +142,6 @@ export const Contents = () => {
                   }
 
                   if (
-                    /**
-                     * 조건: 체크인-체크아웃 날짜 불일치
-                     * Number(statusItem.check_in_time.slice(8, 10)) !== Number(statusItem.check_out_time.slice(8, 10))
-                     */
                     statusItem.attendance_code === 'M100' &&
                     Number(statusItem.check_in_time.slice(8, 10)) !==
                       Number(statusItem.check_out_time.slice(8, 10)) &&
@@ -146,11 +150,12 @@ export const Contents = () => {
                     return (perTimeData = {
                       priority: 98,
                       time: progressTime,
-                      statusName: '불일치statusName-출근',
-                      dataName: '출근',
+                      statusName: '불일치statusName-체크인',
+                      dataName: '체크인',
+                      statusColor: 'olive',
+                      hasData: true,
                     });
                   } else if (
-                    // 조건: 체크인-체크아웃 날짜 일치
                     statusItem.attendance_code === 'M100' &&
                     processedCheckInTime <= progressTime &&
                     processedCheckOutTime >= progressTime
@@ -158,20 +163,22 @@ export const Contents = () => {
                     return (perTimeData = {
                       priority: 100,
                       time: progressTime,
-                      statusName: '일치statusName-출근',
-                      dataName: '출근',
+                      statusName: '일치statusName-체크인',
+                      dataName: '체크인',
+                      statusColor: 'olive',
+                      hasData: true,
                     });
                   } else {
+                    // 뉴)
                     return (perTimeData = {
                       priority: 101,
                       time: progressTime,
                       statusName: '',
+                      hasData: false,
                     });
                   }
                 },
               );
-
-              // priorityData: 만약 동일한 시간대에 데이터가 들어온다면(데이터 중복), sort로 정렬
 
               const priorityData = perTimeData.sort(
                 (a: { priority: number }, b: { priority: number }) => {
@@ -182,11 +189,10 @@ export const Contents = () => {
             });
           }
         } else {
-          // else 부분: 0에서부터 23시까지 데이터가 아예 없는 경우. 하루 내역이 아예 없는 경우
           for (let processTime = 0; processTime <= maxMinute; processTime++) {
             const result = {
               time: processTime,
-              statusName: 'statusName-근무없음',
+              statusName: 'statusName-기록없음',
             };
 
             oneDayData.push(result);
@@ -194,6 +200,8 @@ export const Contents = () => {
         }
 
         const result = {
+          id: memberItem.id,
+          name: memberItem.name,
           oneDayData: oneDayData,
         };
         processedData.push(result);
@@ -202,72 +210,112 @@ export const Contents = () => {
   }
   onProcessedData();
 
-  return (
-    <div>
-      근태/출결 관리
-      <div style={{ width: '400px', border: 'solid 1px black' }}>
-        <div>수강생 등록</div>
-        <div>
-          <label>이름</label>
-          <input
-            placeholder="이름을 입력해주세요"
-            style={{ height: '60px', border: 'solid 1px black' }}
-            onChange={memberNameValue}
-          />
-        </div>
-        <button
-          label="수강생 등록"
-          style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
-          // onClick={() => onRegisterMember()}
-        >
-          등록
-        </button>
-      </div>
-      <div>
-        <button
-          style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
-          onClick={() => onFetchMemberList()}
-        >
-          수강생 불러오기
-        </button>
-      </div>
-      <button
-        label="출결시간 등록"
-        style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
-        onClick={() => setIsOpen(true)}
-      >
-        출결시간 등록
-      </button>
-      {isOpen && (
-        <Modal onClose={() => setIsOpen(false)} width="500px">
-          <div>회원가입</div>
-          <p>여기에 회원가입 폼이나 다른 내용을 넣을 수 있음</p>
+  console.log('processedData: ', processedData);
 
-          <div>
-            <button
+  return (
+    <div
+      style={{
+        paddingLeft: '20px',
+        paddingRight: '20px',
+      }}
+    >
+      출결 관리
+      <div
+        style={{
+          display: 'flex',
+        }}
+      >
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <input
+            type="text"
+            readOnly
+            placeholder="날짜 선택"
+            value={selectedDate ? selectedDate.toLocaleDateString() : ''}
+            onClick={() => setIsCalendarOpen(!isOpen)}
+            style={{ padding: '6px 10px', width: '150px' }}
+          />
+          {isCalendarOpen && (
+            <div
               style={{
-                width: '80px',
-                height: '60px',
-                border: 'solid 1px black',
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                zIndex: 100,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                backgroundColor: 'white',
               }}
-              // onClick={}
             >
-              저장
-            </button>
-            <button
-              style={{
-                width: '80px',
-                height: '60px',
-                border: 'solid 1px black',
-              }}
-              onClick={() => setIsOpen(false)}
-            >
-              닫기
-            </button>
-          </div>
-        </Modal>
-      )}
-      {/* <DailyAttendance attendanceData={attendanceData} /> */}
+              <DayPicker
+                key={month.toISOString()}
+                animate
+                mode="single"
+                month={month}
+                onMonthChange={setMonth}
+                selected={selected}
+                onSelect={setSelected}
+                footer={
+                  selected
+                    ? `Selected: ${selected.toLocaleDateString()}`
+                    : 'Pick a day.'
+                }
+              />
+            </div>
+          )}
+        </div>
+        <div>
+          {isAddMemberOpen && (
+            <Modal onClose={() => setIsAddMemberOpen(false)} width="500px">
+              <div style={{ width: '400px', border: 'solid 1px black' }}>
+                <div>수강생 등록</div>
+                <div>
+                  <label>이름</label>
+                  <input
+                    placeholder="이름을 입력해주세요"
+                    style={{ height: '60px', border: 'solid 1px black' }}
+                    onChange={memberNameValue}
+                  />
+                </div>
+                <button
+                  label="수강생 등록"
+                  style={{
+                    width: '80px',
+                    height: '60px',
+                    border: 'solid 1px black',
+                  }}
+                  onClick={() => onAddMember()}
+                >
+                  등록
+                </button>
+                <button
+                  style={{
+                    width: '80px',
+                    height: '60px',
+                    border: 'solid 1px black',
+                  }}
+                  onClick={() => setIsAddMemberOpen(false)}
+                >
+                  닫기
+                </button>
+              </div>
+            </Modal>
+          )}
+          <button
+            style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
+            onClick={() => setIsAddMemberOpen(true)}
+          >
+            수강생 등록(모달)
+          </button>
+        </div>
+        <div>
+          <button
+            style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
+            onClick={() => onFetchMemberList()}
+          >
+            수강생 불러오기
+          </button>
+        </div>
+      </div>
+      <DailyAttendance attendanceData={processedData} />
     </div>
   );
 };
