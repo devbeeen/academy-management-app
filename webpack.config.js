@@ -52,7 +52,11 @@ module.exports = env => {
         },
         {
           test: /\.css$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'postcss-loader', // Tailwind 적용 위해 추가
+          ],
         },
       ],
     },
