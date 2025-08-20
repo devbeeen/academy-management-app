@@ -19,7 +19,7 @@ export const Contents = () => {
     // auth에서 현재 로그인한 유저 정보 가져오기(auth)
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
-      console.log('getUser-data', data);
+      // console.log('getUser-data', data);
 
       if (error) {
         console.error('getUser 불러오기 실패:', error);
@@ -60,9 +60,6 @@ export const Contents = () => {
     getCompanyCode();
   }, [companyList]);
 
-  console.log('companyList: ', companyList);
-  console.log('loggedInUser: ', loggedInUser);
-
   const onCompanyCodeSetup = async e => {
     e.preventDefault();
 
@@ -77,7 +74,7 @@ export const Contents = () => {
         .eq('id', loggedInUser.user.id)
         .maybeSingle();
       // .single();
-      console.log('existingProfile', existingProfile);
+      // console.log('existingProfile', existingProfile);
 
       if (profileError) {
         console.error('user_profile 회사 코드 중복:', profileError);
@@ -93,7 +90,7 @@ export const Contents = () => {
         .eq('code', companyCode)
         .maybeSingle();
 
-      console.log('existingCompany', existingCompany);
+      // console.log('existingCompany', existingCompany);
       // ☝ companies 테이블에 저장된 회사 코드 조회
 
       // 👇 회사코드가 이미 등록되어 있으면 중단(return)
