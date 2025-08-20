@@ -40,8 +40,10 @@ export const Contents = () => {
       // console.log('getUser-data', data);
 
       if (error) {
-        console.error('유저 정보 가져오기 실패', error);
-        return;
+        // console.error('유저 정보 가져오기 실패', error);
+        // console.log('로그인 안한 사용자');
+        alert('로그인 후 이용 가능합니다.');
+        return navigate('login');
       }
 
       // 로그인한 유저에게(=인증 데이터가 존재하는 유저에게), insert -> user_profile 테이블에 데이터 추가
