@@ -140,7 +140,8 @@ export const Contents = () => {
       if (error) {
         console.error('수강생 등록 실패:', error.message);
       } else {
-        console.log('수강생 등록 성공:', data);
+        // console.log('수강생 등록 성공:', data);
+        alert('성공적으로 등록되었습니다.');
         onFetchMemberList(); // ✅ 리스트 갱신
       }
     };
