@@ -30,7 +30,9 @@
     "src",
     "docs/login.js",
     "test/jestPractice",
-    "src/components/Mainbar/Category/ApartmentManagementSub/.tsx"
+    "src/components/Mainbar/Category/ApartmentManagementSub/.tsx",
+    "postcss.config.js",
+    "public/data/Router copy.tsx"
   ],
   // "include": ["src", "next-env.d.ts", "**/*.ts", "**/*.tsx"], // next.js
   "exclude": ["node_modules"],

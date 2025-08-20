@@ -6,6 +6,11 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc); // UTC 플러그인
 dayjs.extend(timezone); // 타임존 변환 플러그인 ('Asia/Seoul'와 같은 타임존으로 변환)
 
+/**
+ * UTC 시간 문자열 → 한국 시간 문자열로 변환
+ * @param utcString ISO 8601 형식의 UTC 시간
+ * @param format 출력 포맷 (기본값: YYYY-MM-DD HH:mm:ss)
+ */
 export function toKST(
   utcString: string,
   format: string = 'YYYY-MM-DD HH:mm:ss',

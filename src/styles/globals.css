@@ -1,8 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-/* 필요하면 global style 추가 */
-body {
-  @apply bg-gray-50 text-gray-800 font-sans;
+/* body {
+  @apply bg-gray-50 text-red-500 font-sans;
+}
+*/
+
+@layer base {
+  body {
+    /* @apply bg-gray-50 text-red-500 font-sans; */
+  }
 }

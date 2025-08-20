@@ -6,6 +6,8 @@ import GlobalStyle from './styles/GlobalStyle';
 import { ThemeProvider } from 'styled-components';
 import theme from './styles/theme';
 
+// import './styles/globals.css'; // tailwind
+
 const root = ReactDOM.createRoot(document.getElementById('root') as Element);
 
 root.render(

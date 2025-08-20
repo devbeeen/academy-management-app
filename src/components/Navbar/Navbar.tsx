@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { onSignOut } from '../../lib/utils/onSignOut'; // 로그아웃
+import useUserStore from '../../store/userStore';
+import { useShallow } from 'zustand/react/shallow';
 
 import styled from 'styled-components';
 
 export const Navbar = () => {
-  // 🌸🌸🌸🌸🌸🌸🌸🍟🍟🍟🍟🍟❤❤❤🌸🌸🌸🌸🌸🌸
+  const navigate = useNavigate();
+  const { name, companyName } = useUserStore(useShallow(state => state));
+  // const userData = useUserStore(useShallow(state => state));
+
+  const handleSignOut = async () => {
+    onSignOut();
+    navigate('/login');
+  };
 
   return (
     <Wrap>
       <NavbarWrap>
-        <ToggleWrap>
-          <div>토글아이콘</div>
-        </ToggleWrap>
-        <TitleWrap>
-          <CompanyInfoSection>OO학원</CompanyInfoSection>
-        </TitleWrap>
+        {/* <div> */}
+        <ToggleWrap>토글</ToggleWrap>
 
-        <UserSection>
-          <ManualSection>아이콘</ManualSection>
-          <UserInfoSection>홍길동</UserInfoSection>
-          로그아웃버튼
-        </UserSection>
+        <UserWrap>
+          <CompanyName>{companyName ? companyName : 'OO학원'}</CompanyName>
+          <UserName onClick={() => navigate('/')}>
+            {name ? name : '김원장'}
+          </UserName>
+          <LogOut onClick={handleSignOut}>로그아웃</LogOut>
+        </UserWrap>
       </NavbarWrap>
     </Wrap>
   );
@@ -31,23 +40,25 @@ export const Wrap = styled.div`
   flex-direction: column;
   top: 0;
   width: 100%;
-  color: blue;
+  color: white;
   z-index: 50;
 `;
 
 export const NavbarWrap = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: end; /* space-between -> end */
+  align-items: center; /* 추가 */
+  padding: 0 1rem;
   width: 100%;
-  height: 50px;
-  padding: 0 25px;
-  border-bottom: solid 1px red;
-  background-color: orange;
-  font-size: 14px;
+  height: ${({ theme }) => theme.navbar.height}; /* 네브바 높이 */
+  border-bottom: solid 1px white;
+  background-color: ${({ theme }) => theme.mainColor.regular};
+  font-size: 0.8rem; /* 네브바 폰트 크기 */
   font-weight: 400;
 
-  @media (max-width: 800px) {
+  @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     display: flex;
+    justify-content: space-between; /* 추가 */
     align-items: center;
   }
 `;
@@ -55,72 +66,29 @@ export const NavbarWrap = styled.div`
 export const ToggleWrap = styled.div`
   display: none;
   justify-content: center;
-
-  @media (max-width: 800px) {
-    display: block;
-    cursor: pointer;
-  }
-`;
-
-export const TitleWrap = styled.div`
-  display: flex;
-  align-items: center;
-
-  @media (max-width: 800px) {
-    display: none;
-  }
-`;
-
-export const CompanyInfoSection = styled.div`
-  display: flex;
-  align-items: center;
-
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-export const Logo = styled.img`
-  height: 30px;
-  margin-right: 5px;
-`;
-
-export const UserSection = styled.div`
-  display: flex;
-  align-items: center;
-
-  right: 0;
-
-  div {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin-right: 10px;
-
-    p {
-      margin-right: 2px;
-      font-weight: 500;
-    }
-  }
-`;
-
-export const ManualSection = styled.div`
   cursor: pointer;
 
-  :hover {
-    color: olive;
+  @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
+    display: block;
   }
 `;
 
-export const UserInfoSection = styled.div`
-  p {
-    &.user-name {
-      color: green;
-      font-weight: 500;
-    }
-    &.apartment-name {
-      color: red;
-      font-weight: 500;
-    }
-  }
+export const UserWrap = styled.div`
+  display: flex;
+  align-items: center;
+  text-align: center;
+  /* right: 0; */
+`;
+
+export const CompanyName = styled.div`
+  margin-right: 10px;
+`;
+
+export const UserName = styled.div`
+  margin-right: 10px;
+  cursor: pointer;
+`;
+
+export const LogOut = styled.div`
+  cursor: pointer;
 `;

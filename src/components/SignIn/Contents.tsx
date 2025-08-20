@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import axios from 'axios';
 import { supabase } from '../../supabaseClient';
 
-import * as S from './Contents.style';
+import styled from 'styled-components';
+import { Button } from '../../lib/UI/Button';
 
 export const Contents = () => {
   const navigate = useNavigate();
@@ -14,19 +13,11 @@ export const Contents = () => {
   const [userID, setUserID] = useState();
   const [userPW, setUserPW] = useState();
 
-  const idValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('id 입력: ', e.target.value);
-    setUserID(e.target.value);
-  };
-  console.log('userID: ', userID);
+  const onLogin = async () => {
+    // e.preventDefault();
 
-  const pwValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('pw 입력: ', e.target.value);
-    setUserPW(e.target.value);
-  };
-
-  const onLogin = async e => {
-    e.preventDefault();
+    if (!userID) return alert('아이디를 입력해주세요');
+    if (!userPW) return alert('비밀번호를 입력해주세요');
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: userID,
@@ -35,6 +26,7 @@ export const Contents = () => {
 
     if (error) {
       console.error('로그인 실패: ', error.message);
+      alert('로그인을 다시 시도해주세요');
       return;
     }
 
@@ -42,47 +34,109 @@ export const Contents = () => {
   };
 
   return (
-    <S.Section>
-      <div>로그인 페이지</div>
-      <S.Title>타이틀</S.Title>
+    <Wrap>
+      <Title>수업 출결 관리</Title>
 
-      <S.LoginForm
-      //onSubmit={onLogin}
+      <LoginWrap
+      // onSubmit={onLogin}
       >
-        <S.ItemBox>
-          <label>ID</label>
-          <input
+        <ItemWrap>
+          <ItemName>ID</ItemName>
+          <ItemInput
             placeholder="아이디(메일)를 입력해주세요"
-            style={{ height: '60px', border: 'solid 1px black' }}
-            onChange={idValue}
+            onChange={e => setUserID(e.target.value)}
           />
-        </S.ItemBox>
+        </ItemWrap>
 
-        <S.ItemBox>
-          <label>PW</label>
-          <input
+        <ItemWrap className="last-item">
+          <ItemName>PW</ItemName>
+          <ItemInput
+            type="password"
             placeholder="비밀번호를 입력해주세요"
-            style={{ height: '60px', border: 'solid 1px black' }}
-            onChange={pwValue}
+            onChange={e => setUserPW(e.target.value)}
           />
-        </S.ItemBox>
+        </ItemWrap>
 
-        <button
-          label="로그인"
-          onClick={onLogin}
-          style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
-        >
-          로그인
-        </button>
-      </S.LoginForm>
-      <button
-        label="회원가입"
-        onClick={() => navigate('/join')}
-        style={{ width: '80px', height: '60px', border: 'solid 1px black' }}
-      >
+        <Button handleClick={onLogin}>로그인</Button>
+      </LoginWrap>
+      <Bar />
+      <Button handleClick={() => navigate('/join')} width="15rem">
         회원가입
-      </button>
-      <button />
-    </S.Section>
+      </Button>
+
+      <div
+        style={{
+          marginTop: '1rem',
+          lineHeight: '1rem',
+          color: 'gray',
+          fontSize: '0.8rem',
+        }}
+      >
+        <p>테스트 계정 ID: test140@fake.com</p>
+        <p>테스트 계정 PW: aaaaaa</p>
+      </div>
+    </Wrap>
   );
 };
+
+export const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 5rem;
+  height: 100%;
+`;
+
+const Title = styled.div`
+  color: ${({ theme }) => theme.mainColor.regular};
+  font-size: 32px;
+  font-weight: 600;
+`;
+
+const LoginWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 2rem;
+  width: 15rem;
+  font-size: 0.8rem;
+`;
+
+const ItemWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0;
+
+  &.last-item {
+    margin-bottom: 2rem;
+  }
+`;
+
+const ItemName = styled.div`
+  width: 20%;
+`;
+
+const ItemInput = styled.input`
+  padding-left: 0.4rem;
+  width: 80%;
+  height: 2.5rem;
+  border: solid 1px ${({ theme }) => theme.color.gray};
+  border-radius: 0.4rem;
+  background-color: ${({ theme }) => theme.color.lightGrayLevel1};
+  font-size: 0.8rem;
+
+  &::placeholder {
+    /* 플레이스홀더 스타일 */
+    color: ${({ theme }) => theme.color.gray};
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+`;
+
+const Bar = styled.div`
+  margin: 20px 0;
+  width: 12rem;
+  border-bottom: solid 1px ${({ theme }) => theme.color.lightGrayLevel2};
+`;
