@@ -108,16 +108,6 @@ export const Contents = () => {
     // alert('가입 성공! 이메일 인증 후 로그인 가능합니다.');
   };
 
-  const idValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('입력: ', e.target.value);
-    setUserID(e.target.value);
-  };
-
-  const pwValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('입력: ', e.target.value);
-    setUserPW(e.target.value);
-  };
-
   return (
     <Wrap>
       <Title>회원가입</Title>
@@ -135,7 +125,7 @@ export const Contents = () => {
           <ItemName>ID</ItemName>
           <ItemInput
             placeholder="아이디(메일)를 입력해주세요"
-            onChange={idValue}
+            onChange={e => setUserID(e.target.value)}
           />
         </ItemWrap>
 
@@ -144,7 +134,7 @@ export const Contents = () => {
           <ItemInput
             type="password"
             placeholder="비밀번호를 입력해주세요"
-            onChange={pwValue}
+            onChange={e => setUserPW(e.target.value)}
           />
         </ItemWrap>
 
