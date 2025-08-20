@@ -54,6 +54,16 @@ module.exports = env => {
           test: /\.css$/,
           use: [
             MiniCssExtractPlugin.loader,
+            /*
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1, // <= postcss-loader가 다음에 적용되도록
+                // esModule: false, // webpack 5에서 ESM 충돌 방지
+              },
+            },
+            */
+
             'css-loader',
             'postcss-loader', // Tailwind 적용 위해 추가
           ],

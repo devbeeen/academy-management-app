@@ -11,10 +11,10 @@ ${reset}
 }
 
 body {
-  /* 👇 스크롤바 스타일 */
+  /* 스크롤바 스타일 */
   ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
   }
   ::-webkit-scrollbar-thumb {
     border-radius: 0.5em;
@@ -25,7 +25,6 @@ body {
     background-color: #f8f9fa;
     border-bottom: '#c1c1c1';
   }
-  /* 👆 스크롤바 스타일 */
 }
 
 a {

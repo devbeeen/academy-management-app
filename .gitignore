@@ -15,3 +15,8 @@
 .eslintcache
 
 /public/data
+
+# tailwind 관련 (임시, 마이그레이션 전까지)
+postcss.config.js
+tailwind.config.js
+/src/styles/globals.css
