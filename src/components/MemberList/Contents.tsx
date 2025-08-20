@@ -130,6 +130,8 @@ export const Contents = () => {
 
     // [TAG] onAddMember(): 수강생 등록
     const onAddMember = async () => {
+      if (!nameValue) return alert('정보를 입력해 주세요.');
+
       const { data, error } = await supabase.from('members').insert([
         {
           name: nameValue,
