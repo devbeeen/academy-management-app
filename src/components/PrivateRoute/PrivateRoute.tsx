@@ -11,8 +11,8 @@ export default function PrivateRoute({ authentication }) {
    * null, undefined, '' 전부 false
    */
   const isLoggedIn = !!id;
-  console.log('🥰isLoggedIn: ', isLoggedIn);
-  console.log('🥰id: ', id);
+  console.log('isLoggedIn: ', isLoggedIn);
+  console.log('id: ', id);
 
   if (authentication) {
     // 인증이 필요한 페이지

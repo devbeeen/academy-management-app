@@ -22,7 +22,7 @@ export const Contents = () => {
   const currentCompanyID = fetchUserStore.companyID;
 
   /*
-  // 수정/추가 및 삭제 기능 성공시 onFetchMemberList()를 실행시키고자 useEffect에서 별도로 뺌
+  // 수정/추가 및 삭제 기능 성공시, onFetchMemberList()(데이터 불러오기)를 실행시키고자 useEffect에서 별도로 뺌
   useEffect(() => {
     const onFetchMemberList = async () => {
       const { data, error } = await supabase
@@ -130,6 +130,8 @@ export const Contents = () => {
 
     // [TAG] onAddMember(): 수강생 등록
     const onAddMember = async () => {
+      if (!nameValue) return alert('정보를 입력해 주세요.');
+
       const { data, error } = await supabase.from('members').insert([
         {
           name: nameValue,
@@ -140,7 +142,8 @@ export const Contents = () => {
       if (error) {
         console.error('수강생 등록 실패:', error.message);
       } else {
-        console.log('수강생 등록 성공:', data);
+        // console.log('수강생 등록 성공:', data);
+        alert('성공적으로 등록되었습니다.');
         onFetchMemberList(); // ✅ 리스트 갱신
       }
     };

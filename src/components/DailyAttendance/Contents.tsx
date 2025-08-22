@@ -146,7 +146,6 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
 
       // 2025-07-28T09:30:00+00:00
       const attendanceDateId = attendanceDateData.id;
-
       const { data: attendanceStatusData, error: attendanceStatusError } =
         await supabase.from('attendance_status').upsert(
           {
@@ -294,8 +293,8 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
         .eq('attendance_date_id', attendanceDateId) // 삭제할 행의 조건(attendance_date테이블의 id 일치 = 날짜 id 일치)
         .select();
 
-      console.log('attendanceDateId: ', attendanceDateId);
-      console.log('deleteAttendance테이블-data: ', data);
+      // console.log('attendanceDateId: ', attendanceDateId);
+      // console.log('deleteAttendance테이블-data: ', data);
 
       if (error) {
         console.error('attendance_status 삭제 실패:', error);
