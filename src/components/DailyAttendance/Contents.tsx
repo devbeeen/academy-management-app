@@ -146,7 +146,6 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
 
       // 2025-07-28T09:30:00+00:00
       const attendanceDateId = attendanceDateData.id;
-
       const { data: attendanceStatusData, error: attendanceStatusError } =
         await supabase.from('attendance_status').upsert(
           {

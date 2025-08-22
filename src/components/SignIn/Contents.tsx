@@ -35,7 +35,8 @@ export const Contents = () => {
 
   return (
     <Wrap>
-      <Title>수업 출결 관리</Title>
+      <Title>클래스로그</Title>
+      <SubTitle> 1인 원장님을 위한, 출결 관리 시스템</SubTitle>
 
       <LoginWrap
       // onSubmit={onLogin}
@@ -91,6 +92,13 @@ export const Wrap = styled.div`
 const Title = styled.div`
   color: ${({ theme }) => theme.mainColor.regular};
   font-size: 32px;
+  font-weight: 600;
+`;
+
+const SubTitle = styled.div`
+  padding-top: 0.8rem;
+  color: ${({ theme }) => theme.color.gray};
+  font-size: 14px;
   font-weight: 600;
 `;
 

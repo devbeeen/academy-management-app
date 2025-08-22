@@ -22,7 +22,7 @@ export const Contents = () => {
   const currentCompanyID = fetchUserStore.companyID;
 
   /*
-  // 수정/추가 및 삭제 기능 성공시 onFetchMemberList()를 실행시키고자 useEffect에서 별도로 뺌
+  // 수정/추가 및 삭제 기능 성공시, onFetchMemberList()(데이터 불러오기)를 실행시키고자 useEffect에서 별도로 뺌
   useEffect(() => {
     const onFetchMemberList = async () => {
       const { data, error } = await supabase
