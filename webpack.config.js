@@ -77,7 +77,7 @@ module.exports = env => {
       new HtmlWebpackPlugin({
         template: './public/index.html',
         filename: 'index.html',
-        // favicon: './public/data/favicon.png', // MEMO: 파비콘
+        favicon: './public/data/favicon-32x32.png', // MEMO: 파비콘
       }),
       new MiniCssExtractPlugin({
         filename: './[name].css',
