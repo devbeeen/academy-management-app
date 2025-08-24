@@ -5,25 +5,11 @@ import useUserStore from '../../store/userStore';
 import { useShallow } from 'zustand/react/shallow';
 
 import styled from 'styled-components';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 
-export const Navbar = ({ isSidebarOpen, setIsSidebarOpen, handleSidebar }) => {
+export const Navbar = () => {
   const navigate = useNavigate();
   const { name, companyName } = useUserStore(useShallow(state => state));
   // const userData = useUserStore(useShallow(state => state));
-
-  /*
-  const handleSidebar = () => {
-    console.log('ddd');
-
-    if (isSidebarOpen) {
-      setIsSidebarOpen(false);
-    }
-    if (!isSidebarOpen) {
-      setIsSidebarOpen(true);
-    }
-  };
-  */
 
   const handleSignOut = async () => {
     onSignOut();
@@ -34,10 +20,7 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen, handleSidebar }) => {
     <Wrap>
       <NavbarWrap>
         {/* <div> */}
-        {/* <ToggleWrap>토글</ToggleWrap> */}
-        <ToggleWrap onClick={handleSidebar}>
-          <MenuRoundedIcon />
-        </ToggleWrap>
+        <ToggleWrap>토글</ToggleWrap>
 
         <UserWrap>
           <CompanyName>{companyName ? companyName : 'OO학원'}</CompanyName>
@@ -63,7 +46,7 @@ export const Wrap = styled.div`
 
 export const NavbarWrap = styled.div`
   display: flex;
-  justify-content: space-between; /* space-between -> end 💚 */
+  justify-content: end; /* space-between -> end */
   align-items: center; /* 추가 */
   padding: 0 1rem;
   width: 100%;
@@ -75,20 +58,19 @@ export const NavbarWrap = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* 추가 */
     align-items: center;
   }
 `;
 
 export const ToggleWrap = styled.div`
-  /* display: none; */
-  /* display: block; */
-  /* justify-content: center; */
+  display: none;
+  justify-content: center;
   cursor: pointer;
 
-  /* @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
+  @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     display: block;
-  } */
+  }
 `;
 
 export const UserWrap = styled.div`

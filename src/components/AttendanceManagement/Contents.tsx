@@ -114,7 +114,8 @@ export const Contents = () => {
                     ? toKST(statusItem.check_out_time).slice(14, 16)
                     : '';
 
-                  const processedCheckInTime = Math.ceil(
+                  const processedCheckInTime = Math.floor(
+                    // const processedCheckInTime = Math.ceil(
                     /**
                      * (Number(checkInTimeHour) * 60 + Number(checkInTimeMinute)) / 10):
                      * 1-1. Number(checkInTimeHour) = 출근(시간 단위)
@@ -129,8 +130,10 @@ export const Contents = () => {
                   );
 
                   let processedCheckOutTime = 0;
+
                   if (statusItem.check_out_time !== '') {
-                    processedCheckOutTime = Math.ceil(
+                    processedCheckOutTime = Math.floor(
+                      // processedCheckOutTime = Math.ceil(
                       (Number(checkOutTimeHour) * 60 +
                         Number(checkOutTimeMinute)) /
                         10,

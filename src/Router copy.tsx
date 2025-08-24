@@ -21,20 +21,9 @@ import { useShallow } from 'zustand/react/shallow';
 const Router = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleSidebar = () => {
-    if (isSidebarOpen) {
-      console.log('isSidebarOpen-true');
-      setIsSidebarOpen(false);
-    }
-    if (!isSidebarOpen) {
-      console.log('isSidebarOpen-false');
-      setIsSidebarOpen(true);
-    }
-  };
-
   // const [currentUserData, setCurrentUserData] = useState();
   // const userData = useUserStore(useShallow(state => state).userData);
-  // console.log('라우터-currentUserData: ', currentUserData);
+  // console.log('👍👍👍---라우터currentUserData:', currentUserData);
   // const userId = userData.id;
 
   const isAuth = () => {
@@ -44,16 +33,9 @@ const Router = () => {
   function Layout() {
     return (
       <>
-        <Navbar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-          handleSidebar={handleSidebar}
-        />
+        <Navbar />
         <Body>
-          <Sidebar
-            isSidebarOpen={isSidebarOpen}
-            setIsSidebarOpen={setIsSidebarOpen}
-          />
+          <Sidebar />
           <Contents>
             <Wrap>
               <Outlet />
@@ -98,26 +80,34 @@ const Router = () => {
 
 export default Router;
 
-// 본문
 const Body = styled.div`
   display: flex;
-  margin-top: ${({ theme }) => theme.navbar.height};
+  margin-top: ${({ theme }) =>
+    theme.navbar.height}; /* 네브바의 height 감안 🎁55px */
+  /* background-color: pink; 🎁주석 */
 `;
 
 const Contents = styled.div`
-  margin-left: ${({ theme }) => theme.sidebar.width};
+  margin-left: ${({ theme }) =>
+    theme.sidebar.width}; /* 사이드바의 width 감안 🎁250px */
   width: 100vw;
-  height: calc(100vh - ${({ theme }) => theme.navbar.height});
+  height: calc(
+    100vh - ${({ theme }) => theme.navbar.height}
+  ); /* 네브바의 height 감안 🎁55px */
 
   background-color: white;
   transition: 0.2s ease-out;
+  /* min-width: 0; 🔥 🎁주석 */
+  /* flex: 1; 사용X*/
+  /* max-height: 0; 사용X*/
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
-    margin-left: 0; /* 사라진 사이드바 자리 채우기 */
+    margin-left: 0; /* [MEMO] 사라진 사이드바 자리 채우기 */
     transition: 0.2s ease-out;
   }
 `;
 
 const Wrap = styled.div`
   padding: 30px 20px;
+  /* background-color: gray; */
 `;

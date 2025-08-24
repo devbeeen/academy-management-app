@@ -3,11 +3,11 @@ import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+export const Sidebar = () => {
   // export const SideBar = ({ isSidebarOpen, closeSidebar }) => {
 
   const navigate = useNavigate();
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [processedData, setProcessedData] = useState([]);
 
   const codeToPath = {
@@ -65,9 +65,8 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       className={`background-${isSidebarOpen ? 'open' : ''}`}
       onClick={closeSidebar}
     >
-      {/* <Wrap className={`sidebar-${isSidebarOpen ? 'open' : 'close'}`}></Wrap> */}
       <Wrap
-        className={`sidebar-${isSidebarOpen ? 'open' : 'close'}`}
+        className={`sidebar-${isSidebarOpen ? 'open' : ''}`}
         onClick={e => {
           e.stopPropagation();
         }}
@@ -98,7 +97,7 @@ const Background = styled.div`
   &.background-open {
     position: fixed;
     display: flex;
-    top: ${({ theme }) => theme.navbar.height};
+    top: 50px; /* 🎁55px, ${({ theme }) => theme.navbar.height} */
     left: 0px;
     width: 100vw;
     height: 100vh;
@@ -107,7 +106,7 @@ const Background = styled.div`
 
     @media (min-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
       /* visibility적용: 브라우저 width가 min-width를 넘을 경우, 배경 숨기기 */
-      /* visibility: hidden; */
+      visibility: hidden;
     }
   }
 `;
@@ -122,18 +121,9 @@ const Wrap = styled.div`
   z-index: 100;
   transition: 0.2s ease-out;
 
-  /* ----- */
-  /* 기본 close 상태 */
-  &.sidebar-close {
-    background-color: olive;
-    margin-left: -${({ theme }) => theme.sidebar.width};
-    /* transition: 0.2s ease-out; */
-  }
-
   &.sidebar-open {
     visibility: visible;
     margin-left: 0;
-    /* transition: 0.2s ease-out; */
 
     @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     }
@@ -141,8 +131,8 @@ const Wrap = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     /* margin-left: 사이드바 사라짐 */
-    /* margin-left: -${({ theme }) => theme.sidebar.width};
-    transition: 0.2s ease-out; */
+    margin-left: -${({ theme }) => theme.sidebar.width};
+    transition: 0.2s ease-out;
   }
 `;
 
