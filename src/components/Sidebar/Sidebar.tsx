@@ -3,12 +3,22 @@ import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+// import { useCategoryStore } from '../../store/categoryStore';
+import { useCategoryStore } from '../../store/categoryStore';
+import { useShallow } from 'zustand/react/shallow';
+
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   // export const SideBar = ({ isSidebarOpen, closeSidebar }) => {
 
   const navigate = useNavigate();
   // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [processedData, setProcessedData] = useState([]);
+
+  const state = useCategoryStore(useShallow(state => state));
+  const { categories } = useCategoryStore(useShallow(state => state));
+  console.log('카테고리::: ', state);
+  console.log('카테고리-categories::: ', categories);
+  // setProcessedData(categories);
 
   const codeToPath = {
     C100: '/my-profile', // 내 프로필
@@ -22,34 +32,36 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     C102: 3,
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabase.from('categories').select('*');
+  /* fetchData(): 카테고리 데이터 API 요청 -> 기존 Sidebar 컴포넌트에셔 요청했던 것을 zustand에서 관리로 변경 */
 
-      if (error) {
-        console.error('categories 테이블 가져오기 실패: ', error);
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const { data, error } = await supabase.from('categories').select('*');
 
-      // processedData 생성(path 적용, order 정렬)
-      const result = data
-        .filter(item => ['C101', 'C102'].includes(item.code)) // 원하는 code만 필터
-        .map(item => ({
-          isOpen: false,
-          name: item.name,
-          code: item.code,
-          parentCode: item.parent_id,
-          path: codeToPath[item.code] ?? '',
-        }))
-        .sort(
-          (a, b) => (codeOrder[a.code] ?? 999) - (codeOrder[b.code] ?? 999),
-        );
+  //     if (error) {
+  //       console.error('categories 테이블 가져오기 실패: ', error);
+  //       return;
+  //     }
 
-      setProcessedData(result);
-    };
+  //     // processedData 생성(path 적용, order 정렬)
+  //     const result = data
+  //       .filter(item => ['C101', 'C102'].includes(item.code)) // 원하는 code만 필터
+  //       .map(item => ({
+  //         isOpen: false,
+  //         name: item.name,
+  //         code: item.code,
+  //         parentCode: item.parent_id,
+  //         path: codeToPath[item.code] ?? '',
+  //       }))
+  //       .sort(
+  //         (a, b) => (codeOrder[a.code] ?? 999) - (codeOrder[b.code] ?? 999),
+  //       );
 
-    fetchData();
-  }, []);
+  //     setProcessedData(result);
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   function closeSidebar() {
     setIsSidebarOpen(false);
@@ -62,20 +74,22 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   return (
     <Background
-      className={`background-${isSidebarOpen ? 'open' : ''}`}
-      onClick={closeSidebar}
+      // className={`background-${isSidebarOpen ? 'open' : ''}`}
+      className={isSidebarOpen ? 'background-open' : 'background-close'}
+      // onClick={closeSidebar}
     >
       {/* <Wrap className={`sidebar-${isSidebarOpen ? 'open' : 'close'}`}></Wrap> */}
       <Wrap
-        className={`sidebar-${isSidebarOpen ? 'open' : 'close'}`}
+        // className={`sidebar-${isSidebarOpen ? 'open' : 'close'}`}
+        className={isSidebarOpen ? 'sidebar-open' : 'sidebar-close'}
         onClick={e => {
           e.stopPropagation();
         }}
       >
         <WrapList>
           <CategoryUl>
-            {processedData &&
-              processedData.map((item, idx) => {
+            {categories &&
+              categories.map((item, idx) => {
                 return (
                   <CategoryLi
                     key={idx}
@@ -110,33 +124,44 @@ const Background = styled.div`
       /* visibility: hidden; */
     }
   }
+
+  &.background-close {
+    position: fixed;
+    display: flex;
+    top: ${({ theme }) => theme.navbar.height};
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(100, 0, 0, 0.6);
+    z-index: 100;
+
+    @media (min-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
+      /* visibility적용: 브라우저 width가 min-width를 넘을 경우, 배경 숨기기 */
+      /* visibility: hidden; */
+    }
+  }
 `;
 
+/* box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3); */
 const Wrap = styled.div`
   position: fixed;
   width: ${({ theme }) => theme.sidebar.width};
   height: calc(100vh - ${({ theme }) => theme.navbar.height});
-  /* box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3); */
   background-color: ${({ theme }) => theme.color.lightGrayLevel1};
   color: white;
   z-index: 100;
   transition: 0.2s ease-out;
 
-  /* ----- */
-  /* 기본 close 상태 */
-  &.sidebar-close {
-    background-color: olive;
-    margin-left: -${({ theme }) => theme.sidebar.width};
-    /* transition: 0.2s ease-out; */
-  }
-
   &.sidebar-open {
-    visibility: visible;
     margin-left: 0;
-    /* transition: 0.2s ease-out; */
 
     @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     }
+  }
+
+  /* 기본 close 상태 */
+  &.sidebar-close {
+    margin-left: -${({ theme }) => theme.sidebar.width};
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {

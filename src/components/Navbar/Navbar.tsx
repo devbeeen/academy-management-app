@@ -12,19 +12,6 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen, handleSidebar }) => {
   const { name, companyName } = useUserStore(useShallow(state => state));
   // const userData = useUserStore(useShallow(state => state));
 
-  /*
-  const handleSidebar = () => {
-    console.log('ddd');
-
-    if (isSidebarOpen) {
-      setIsSidebarOpen(false);
-    }
-    if (!isSidebarOpen) {
-      setIsSidebarOpen(true);
-    }
-  };
-  */
-
   const handleSignOut = async () => {
     onSignOut();
     navigate('/login');
@@ -68,7 +55,7 @@ export const NavbarWrap = styled.div`
   padding: 0 1rem;
   width: 100%;
   height: ${({ theme }) => theme.navbar.height}; /* 네브바 높이 */
-  border-bottom: solid 1px white;
+  /* border-bottom: solid 1px white; */
   background-color: ${({ theme }) => theme.mainColor.regular};
   font-size: 0.8rem; /* 네브바 폰트 크기 */
   font-weight: 400;
