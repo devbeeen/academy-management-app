@@ -10,8 +10,8 @@ export const Contents = () => {
   const [loggedInUser, setLoggedInUser] = useState([]); // 로그인 유저(최초 로그인)
   const [companyList, setCompanyList] = useState([]); // companies 테이블 데이터
 
-  const [companyCode, setCompanyCode] = useState();
-  const [companyName, setCompanyName] = useState();
+  const [companyCode, setCompanyCode] = useState('');
+  const [companyName, setCompanyName] = useState('');
 
   const navigate = useNavigate();
 

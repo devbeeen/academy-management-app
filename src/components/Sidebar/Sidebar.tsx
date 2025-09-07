@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { useCategoryStore } from '../../store/categoryStore';
-import { useUIStore } from '../../store/uiStore'; // 🚀
 import { useShallow } from 'zustand/react/shallow';
+import { useCategoryStore } from '../../store/categoryStore';
+import { useUIStore } from '../../store/uiStore';
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -12,16 +12,17 @@ export const Sidebar = () => {
 
   function onClickCategory(path) {
     navigate(`${path}`);
+    toggleSidebar();
   }
 
-  const isSidebarOpen = useUIStore(state => state.isSidebarOpen); // 🚀
-  const toggleSidebar = useUIStore(state => state.toggleSidebar); // 🚀🚀
+  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
+  const toggleSidebar = useUIStore(state => state.toggleSidebar);
 
   return (
     <Background
       className={isSidebarOpen ? 'background-open' : 'background-close'}
       onClick={() => {
-        if (isSidebarOpen) toggleSidebar(); // ✅ 열렸을 때만 닫히게
+        if (isSidebarOpen) toggleSidebar(); // 열렸을 때만 닫히게
       }}
     >
       <Wrap

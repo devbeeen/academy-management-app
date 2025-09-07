@@ -46,8 +46,6 @@ const Router = () => {
   /* ✋ 정리 필요
   1.
     const handleSidebar = () => {
-      console.log('ddd');
-    
       if (isSidebarOpen) {
         setIsSidebarOpen(false);
       }
@@ -95,7 +93,6 @@ const Body = styled.div`
 `;
 
 const Contents = styled.div`
-  /* margin-left: ${({ theme }) => theme.sidebar.width}; */
   width: 100vw;
   height: calc(100vh - ${({ theme }) => theme.navbar.height});
 
@@ -103,13 +100,11 @@ const Contents = styled.div`
   transition: 0.2s ease-out;
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
-    /* margin-left: 0;  사라진 사이드바 자리 채우기 */
     transition: 0.2s ease-out;
   }
 `;
 
 const Wrap = styled.div`
-  /* padding: 30px 20px; */
   /* padding: 30px 1rem; */
   padding: 1.5rem 1rem;
 `;
