@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,18 +17,22 @@ import { useCategoryStore } from './store/categoryStore';
 
 const Router = () => {
   // 로그인 후, 진입점(Router)에서 카테고리 API fetch
-  // useEffect(() => {
-  //   useCategoryStore.getState().fetchData();
-  //   console.log('!!!! ', useCategoryStore.getState().fetchData());
-  // }, []);
+  useEffect(() => {
+    // useCategoryStore.getState().fetchData();
+
+    useCategoryStore
+      .getState()
+      .fetchData()
+      .then(data => {
+        // console.log('Router-fetchData: ', data);
+      });
+  }, []);
 
   function Layout() {
     return (
       <>
+        <Navbar />
         <Body>
-          {/* ✅ Navbar&Sidebar → CategorybarWrapper */}
-          {/* <CategorybarWrapper /> */}
-          <Navbar />
           <Sidebar />
           <Contents>
             <Wrap>
@@ -61,16 +65,6 @@ const Router = () => {
   };
   */
 
-  // ✅ Outlet과 Navbar&Sidebar 분리
-  function CategorybarWrapper() {
-    return (
-      <>
-        <Navbar />
-        <Sidebar />
-      </>
-    );
-  }
-
   return (
     <>
       <BrowserRouter>
@@ -101,7 +95,7 @@ const Body = styled.div`
 `;
 
 const Contents = styled.div`
-  margin-left: ${({ theme }) => theme.sidebar.width};
+  /* margin-left: ${({ theme }) => theme.sidebar.width}; */
   width: 100vw;
   height: calc(100vh - ${({ theme }) => theme.navbar.height});
 
@@ -109,11 +103,13 @@ const Contents = styled.div`
   transition: 0.2s ease-out;
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
-    margin-left: 0; /* 사라진 사이드바 자리 채우기 */
+    /* margin-left: 0;  사라진 사이드바 자리 채우기 */
     transition: 0.2s ease-out;
   }
 `;
 
 const Wrap = styled.div`
-  padding: 30px 20px;
+  /* padding: 30px 20px; */
+  /* padding: 30px 1rem; */
+  padding: 1.5rem 1rem;
 `;

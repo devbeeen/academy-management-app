@@ -54,12 +54,18 @@ export const useCategoryStore = create(
           .sort(
             (a, b) => (codeOrder[a.code] ?? 999) - (codeOrder[b.code] ?? 999),
           );
+        /**
+         * sort((a, b) => (codeOrder[a.code] ?? 999) - (codeOrder[b.code] ?? 999)):
+         * 1. ?? 연산자: (codeOrder[a.code] ?? 999)
+         * ??는 nullish 병합 연산자. 왼쪽 값이 null이나 undefined일 때만 오른쪽 값을 반환한다.
+         * ?? 연산자 왼쪽 값(=codeOrder[a.code])이 null이나 undefined이면 오른쪽 값(=999)을 반환.
+         * ?? 왼쪽이 falsy값도 아니고, null이나 undefined일 때만 오른쪽 값을 반환한다.
+         */
 
         set({ categories: result });
       },
       // -----
       // setCategory: data => set(state => ({ ...state, ...data })),
-
       setCategory: (code, partial) =>
         set(state => ({
           categories: state.categories.map(cat =>

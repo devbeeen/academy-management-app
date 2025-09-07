@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-// import { useCategoryStore } from '../../store/categoryStore';
 import { useCategoryStore } from '../../store/categoryStore';
 import { useUIStore } from '../../store/uiStore'; // 🚀
 import { useShallow } from 'zustand/react/shallow';
@@ -15,14 +14,18 @@ export const Sidebar = () => {
     navigate(`${path}`);
   }
 
-  const isSidebarOpenStore = useUIStore(state => state.isSidebarOpen); // 🚀
+  const isSidebarOpen = useUIStore(state => state.isSidebarOpen); // 🚀
+  const toggleSidebar = useUIStore(state => state.toggleSidebar); // 🚀🚀
 
   return (
     <Background
-      className={isSidebarOpenStore ? 'background-open' : 'background-close'}
+      className={isSidebarOpen ? 'background-open' : 'background-close'}
+      onClick={() => {
+        if (isSidebarOpen) toggleSidebar(); // ✅ 열렸을 때만 닫히게
+      }}
     >
       <Wrap
-        className={isSidebarOpenStore ? 'sidebar-open' : 'sidebar-close'} // 🚀
+        className={isSidebarOpen ? 'sidebar-open' : 'sidebar-close'}
         onClick={e => {
           e.stopPropagation();
         }}
@@ -49,6 +52,7 @@ export const Sidebar = () => {
 
 const Background = styled.div`
   ${({ theme }) => theme.disableDrag};
+  /* 기본 close 상태 */
 
   &.background-open {
     position: fixed;
@@ -58,22 +62,6 @@ const Background = styled.div`
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.6);
-    z-index: 100;
-
-    @media (min-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
-      /* visibility적용: 브라우저 width가 min-width를 넘을 경우, 배경 숨기기 */
-      /* visibility: hidden; */
-    }
-  }
-
-  &.background-close {
-    position: fixed;
-    display: flex;
-    top: ${({ theme }) => theme.navbar.height};
-    left: 0px;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(100, 0, 0, 0.6);
     z-index: 100;
 
     @media (min-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
@@ -93,16 +81,16 @@ const Wrap = styled.div`
   z-index: 100;
   transition: 0.2s ease-out;
 
+  /* 기본 close 상태 */
+  &.sidebar-close {
+    margin-left: -${({ theme }) => theme.sidebar.width};
+  }
+
   &.sidebar-open {
     margin-left: 0;
 
     @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {
     }
-  }
-
-  /* 기본 close 상태 */
-  &.sidebar-close {
-    margin-left: -${({ theme }) => theme.sidebar.width};
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoint.maxWidth}) {

@@ -12,12 +12,13 @@ import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 export const Navbar = () => {
   const navigate = useNavigate();
   const { name, companyName } = useUserStore(useShallow(state => state));
-  const toggleSidebar = useUIStore(state => state.toggleSidebar); // 🚀🚀
+  const toggleSidebar = useUIStore(state => state.toggleSidebar);
 
-  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
-  useEffect(() => {
-    console.log('isSidebarOpen changed:', isSidebarOpen);
-  }, [isSidebarOpen]);
+  // isSidebarOpen 값 반응 확인
+  // const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
+  // useEffect(() => {
+  //   console.log('isSidebarOpen changed:', isSidebarOpen);
+  // }, [isSidebarOpen]);
 
   const handleSignOut = async () => {
     onSignOut();
@@ -27,7 +28,7 @@ export const Navbar = () => {
   return (
     <Wrap>
       <NavbarWrap>
-        {/* toggleSidebar 🚀 */}
+        {/* toggleSidebar */}
         <ToggleWrap onClick={toggleSidebar}>
           <MenuRoundedIcon />
         </ToggleWrap>
