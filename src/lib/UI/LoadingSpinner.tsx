@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import spinnerGIF from '../../../public/data/loading-200x200.gif';
 
 import { useUIStore } from '../../store/uiStore';
 
@@ -26,7 +27,8 @@ export const LoadingSpinner = ({ isLoading }: LoadingSpinnerProps) => {
   return (
     <>
       <LoadingWrap>
-        <LoadingGIF src="/data/loading-200x200.gif" />
+        {/* <LoadingGIF src="/data/loading-200x200.gif" /> */}
+        <LoadingGIF src={spinnerGIF} alt="Loading..." />
       </LoadingWrap>
     </>
   );

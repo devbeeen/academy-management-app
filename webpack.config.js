@@ -63,10 +63,17 @@ module.exports = env => {
               },
             },
             */
-
             'css-loader',
             'postcss-loader', // Tailwind 적용 위해 추가
           ],
+        },
+        // 아래 asset/resource: 빌드시 gif 깨짐 현상 해결 위해 추가
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          type: 'asset/resource', // asset modules(Webpack 5 내장 기능): 이미지 리소스를 자동으로 dist에 복사해줌
+          generator: {
+            filename: 'static/media/[name][hash][ext][query]', // generator.filename 옵션: 파일명 형태 지정(리소스 명시화)
+          },
         },
       ],
     },
