@@ -45,7 +45,7 @@ const Router = () => {
   }
   /* ✋ 정리 필요
   1.
-    const handleSidebar = () => {
+    const onHandleSidebar = () => {
       if (isSidebarOpen) {
         setIsSidebarOpen(false);
       }
@@ -55,7 +55,7 @@ const Router = () => {
     };
 
   2.
-  const handleSidebar = () => {
+  const onHandleSidebar = () => {
     setIsSidebarOpen(prev => {
       console.log(prev ? 'isSidebarOpen-true' : 'isSidebarOpen-false');
       return !prev;

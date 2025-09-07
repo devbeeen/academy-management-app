@@ -29,6 +29,7 @@ const theme = {
     lightGrayLevel1: '#f3f3f3',
     lightGrayLevel2: '#cdcdcd',
     gray: '#b2b2b2',
+    grayLevel2: '#9F9F9F',
   },
 
   fontSize: {

@@ -1,23 +1,23 @@
-// 수강생 등록 컴포넌트
+// 수강생 출결 데이터 불러오기
 
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
-import useUserStore from '../../store/userStore';
-import { useShallow } from 'zustand/react/shallow';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
 import { Contents as DailyAttendance } from '../DailyAttendance/Contents';
 import { Button } from '../../lib/UI/Button';
 import { toKST } from '../../lib/utils/toKST';
 
+import { supabase } from '../../supabaseClient';
+import useUserStore from '../../store/userStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../store/uiStore';
+
 // import { DayPicker } from 'react-day-picker'; // react-day-picker 라이브러리
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'; // MUI 데이터 피커
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'; // MUI 데이터 피커
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'; // MUI 데이터 피커
-import dayjs, { Dayjs } from 'dayjs';
-
 import { TextField } from '@mui/material';
-
-import styled from 'styled-components';
+import dayjs, { Dayjs } from 'dayjs';
 
 export const Contents = () => {
   // DatePicker 값 저장용 state

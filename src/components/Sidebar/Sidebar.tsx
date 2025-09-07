@@ -10,13 +10,13 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const { categories } = useCategoryStore(useShallow(state => state));
 
+  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
+  const toggleSidebar = useUIStore(state => state.toggleSidebar);
+
   function onClickCategory(path) {
     navigate(`${path}`);
     toggleSidebar();
   }
-
-  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
-  const toggleSidebar = useUIStore(state => state.toggleSidebar);
 
   return (
     <Background
@@ -78,7 +78,6 @@ const Wrap = styled.div`
   width: ${({ theme }) => theme.sidebar.width};
   height: calc(100vh - ${({ theme }) => theme.navbar.height});
   background-color: ${({ theme }) => theme.color.lightGrayLevel1};
-  color: white;
   z-index: 100;
   transition: 0.2s ease-out;
 
@@ -116,10 +115,11 @@ const CategoryLi = styled.li`
   align-items: center;
   height: 45px;
   padding: 1rem 1rem;
-  background-color: ${({ theme }) => theme.mainColor.regular};
+  background-color: ${({ theme }) => theme.color.gray};
+  color: white;
   cursor: pointer;
 
   &:hover {
-    background-color: ${({ theme }) => theme.mainColor.dark};
+    background-color: ${({ theme }) => theme.color.grayLevel2};
   }
 `;

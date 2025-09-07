@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { onSignOut } from '../../lib/utils/onSignOut'; // 로그아웃
 
 import useUserStore from '../../store/userStore';
-import { useUIStore } from '../../store/uiStore'; // 🚀
+import { useUIStore } from '../../store/uiStore';
 import { useShallow } from 'zustand/react/shallow';
 
 import styled from 'styled-components';
