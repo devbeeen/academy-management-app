@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { onSignOut } from '../../lib/utils/onSignOut'; // 로그아웃
+
 import useUserStore from '../../store/userStore';
+import { useUIStore } from '../../store/uiStore'; // 🚀
 import { useShallow } from 'zustand/react/shallow';
 
 import styled from 'styled-components';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 
-export const Navbar = ({ isSidebarOpen, setIsSidebarOpen, handleSidebar }) => {
+export const Navbar = () => {
   const navigate = useNavigate();
   const { name, companyName } = useUserStore(useShallow(state => state));
-  // const userData = useUserStore(useShallow(state => state));
+  const toggleSidebar = useUIStore(state => state.toggleSidebar); // 🚀🚀
+
+  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
+  useEffect(() => {
+    console.log('isSidebarOpen changed:', isSidebarOpen);
+  }, [isSidebarOpen]);
 
   const handleSignOut = async () => {
     onSignOut();
@@ -20,9 +27,8 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen, handleSidebar }) => {
   return (
     <Wrap>
       <NavbarWrap>
-        {/* <div> */}
-        {/* <ToggleWrap>토글</ToggleWrap> */}
-        <ToggleWrap onClick={handleSidebar}>
+        {/* toggleSidebar 🚀 */}
+        <ToggleWrap onClick={toggleSidebar}>
           <MenuRoundedIcon />
         </ToggleWrap>
 

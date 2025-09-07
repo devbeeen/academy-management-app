@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -13,47 +13,23 @@ import AttendanceManagementPage from './pages/AttendanceManagementPage';
 import { Navbar } from './components/Navbar/Navbar';
 import { Sidebar } from './components/Sidebar/Sidebar';
 
-import PrivateRoute from './components/PrivateRoute/PrivateRoute';
-
-import useUserStore from './store/userStore';
-import { useShallow } from 'zustand/react/shallow';
+import { useCategoryStore } from './store/categoryStore';
 
 const Router = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const handleSidebar = () => {
-    if (isSidebarOpen) {
-      console.log('isSidebarOpen-true');
-      setIsSidebarOpen(false);
-    }
-    if (!isSidebarOpen) {
-      console.log('isSidebarOpen-false');
-      setIsSidebarOpen(true);
-    }
-  };
-
-  // const [currentUserData, setCurrentUserData] = useState();
-  // const userData = useUserStore(useShallow(state => state).userData);
-  // console.log('라우터-currentUserData: ', currentUserData);
-  // const userId = userData.id;
-
-  const isAuth = () => {
-    return !!userId;
-  };
+  // 로그인 후, 진입점(Router)에서 카테고리 API fetch
+  // useEffect(() => {
+  //   useCategoryStore.getState().fetchData();
+  //   console.log('!!!! ', useCategoryStore.getState().fetchData());
+  // }, []);
 
   function Layout() {
     return (
       <>
-        <Navbar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-          handleSidebar={handleSidebar}
-        />
         <Body>
-          <Sidebar
-            isSidebarOpen={isSidebarOpen}
-            setIsSidebarOpen={setIsSidebarOpen}
-          />
+          {/* ✅ Navbar&Sidebar → CategorybarWrapper */}
+          {/* <CategorybarWrapper /> */}
+          <Navbar />
+          <Sidebar />
           <Contents>
             <Wrap>
               <Outlet />
@@ -63,34 +39,54 @@ const Router = () => {
       </>
     );
   }
+  /* ✋ 정리 필요
+  1.
+    const handleSidebar = () => {
+      console.log('ddd');
+    
+      if (isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+      if (!isSidebarOpen) {
+        setIsSidebarOpen(true);
+      }
+    };
+
+  2.
+  const handleSidebar = () => {
+    setIsSidebarOpen(prev => {
+      console.log(prev ? 'isSidebarOpen-true' : 'isSidebarOpen-false');
+      return !prev;
+    });
+  };
+  */
+
+  // ✅ Outlet과 Navbar&Sidebar 분리
+  function CategorybarWrapper() {
+    return (
+      <>
+        <Navbar />
+        <Sidebar />
+      </>
+    );
+  }
 
   return (
     <>
       <BrowserRouter>
-        {/* <Navbar />
-        <Sidebar /> */}
-
-        {/* <Body> */}
         <Routes>
           {/* 인증 필요 라우트 - 인증 true인 사용자 대상 */}
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} />
-            {/* <Route path="/my-profile" element={<MainPage />} /> */}
             <Route path="/member" element={<MemberPage />} />
             <Route path="/attendance" element={<AttendanceManagementPage />} />
           </Route>
 
           {/* 인증 불필요 라우트 - 인증 false인 사용자 대상 */}
-
           <Route path="/login" element={<LoginPage />} />
           <Route path="/join" element={<SignUpPage />} />
           <Route path="/company-setup" element={<InitialCompanySetupPage />} />
-
-          {/* <Route path="/join" element={<SignUpPage />} />
-          <Route path="/member" element={<MemberPage />} />
-          <Route path="/attendance" element={<AttendanceManagementPage />} />  */}
         </Routes>
-        {/* </Body> */}
       </BrowserRouter>
     </>
   );
