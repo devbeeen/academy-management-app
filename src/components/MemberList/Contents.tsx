@@ -1,17 +1,19 @@
 import React, { useState, useEffect, memo } from 'react';
 import ReactDOM from 'react-dom';
+import styled from 'styled-components';
+
+import { Modal } from '../../lib/UI/Modal';
+import { Button } from '../../lib/UI/Button';
+import { LoadingSpinner } from '../../lib/UI/LoadingSpinner'; // 로딩 스피너
 
 import { supabase } from '../../supabaseClient';
 import useUserStore from '../../store/userStore';
-import { useShallow } from 'zustand/react/shallow';
 
-import styled from 'styled-components';
-import { Modal } from '../../lib/UI/Modal';
-import { Button } from '../../lib/UI/Button';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../store/uiStore';
 
 import { DataGrid } from '@mui/x-data-grid'; // MUI 그리드
 import Paper from '@mui/material/Paper'; // MUI 그리드
-
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
@@ -23,6 +25,14 @@ export const Contents = () => {
 
   const fetchUserStore = useUserStore(useShallow(state => state));
   const currentCompanyID = fetchUserStore.companyID;
+
+  const handleLoading = useUIStore(state => state.handleLoading); // 로딩 스피너
+  const isLoading = useUIStore(state => state.isLoading); // 로딩 스피너
+  const setLoading = useUIStore(state => state.setLoading); // 로딩 스피너
+
+  useEffect(() => {
+    console.log('isLoading changed:', isLoading);
+  }, [isLoading]);
 
   /*
   // 수정/추가 및 삭제 기능 성공시,
@@ -52,6 +62,8 @@ export const Contents = () => {
   }, []);
 
   const onFetchMemberList = async () => {
+    setLoading(true); // 로딩 스피너(true로)
+
     const { data, error } = await supabase
       .from('members')
       .select('*')
@@ -63,6 +75,7 @@ export const Contents = () => {
     if (error) {
       console.error('members 테이블 가져오기 실패: ', error);
     }
+    setLoading(false); // 로딩 스피너(false로)
   };
 
   // console.log('MemberList-memberList', memberList);
@@ -190,7 +203,7 @@ export const Contents = () => {
         {isEditOpen && (
           <Modal onClose={() => setIsEditOpen(false)}>
             <ModalElementsWrap>
-              <div>수정!</div>
+              {/* <div>수정!</div> */}
 
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div>이름</div>
@@ -295,49 +308,51 @@ export const Contents = () => {
   });
   AddMemberModal.displayName = 'AddMemberModal';
 
-  return (
-    <div>
-      <div style={{ display: 'flex', marginBottom: '1rem' }}>
-        <AddMemberModal />
-        {/* <Button handleClick={() => onFetchMemberList()}>수강생 불러오기</Button> */}
-      </div>
+  if (isLoading) return <LoadingSpinner isLoading={isLoading} />;
+  else
+    return (
       <div>
-        <Paper sx={{ height: 600, width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSizeOptions={[10, 50, 100]}
-            sx={{ border: 0 }}
-          />
-        </Paper>
+        <div style={{ display: 'flex', marginBottom: '1rem' }}>
+          <AddMemberModal />
+          {/* <Button handleClick={() => onFetchMemberList()}>수강생 불러오기</Button> */}
+        </div>
+        <div>
+          <Paper sx={{ height: 600, width: '100%' }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSizeOptions={[10, 50, 100]}
+              sx={{ border: 0 }}
+            />
+          </Paper>
 
-        <EditModal />
+          <EditModal />
 
-        {isDeleteOpen && (
-          <Modal onClose={() => setIsDeleteOpen(false)}>
-            <ModalElementsWrap>
-              <div>
-                정말 삭제하시겠습니까? 삭제된 데이터는 복구할 수 없습니다.
-              </div>
-              <ButtonsWrap>
-                <Button handleClick={onDeleteMember} width={'4rem'}>
-                  삭제
-                </Button>
-                <div style={{ marginLeft: '0.5rem' }}>
-                  <Button
-                    handleClick={() => setIsDeleteOpen(false)}
-                    width={'4rem'}
-                  >
-                    닫기
-                  </Button>
+          {isDeleteOpen && (
+            <Modal onClose={() => setIsDeleteOpen(false)}>
+              <ModalElementsWrap>
+                <div>
+                  정말 삭제하시겠습니까? 삭제된 데이터는 복구할 수 없습니다.
                 </div>
-              </ButtonsWrap>
-            </ModalElementsWrap>
-          </Modal>
-        )}
+                <ButtonsWrap>
+                  <Button handleClick={onDeleteMember} width={'4rem'}>
+                    삭제
+                  </Button>
+                  <div style={{ marginLeft: '0.5rem' }}>
+                    <Button
+                      handleClick={() => setIsDeleteOpen(false)}
+                      width={'4rem'}
+                    >
+                      닫기
+                    </Button>
+                  </div>
+                </ButtonsWrap>
+              </ModalElementsWrap>
+            </Modal>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export const ModalElementsWrap = styled.div`

@@ -2,15 +2,23 @@ import React, { useState, useEffect, memo, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import * as S from './Contents.style';
 
-import { supabase } from '../../supabaseClient';
-
 import { Modal } from '../../lib/UI/Modal';
 import { Button } from '../../lib/UI/Button';
+import { LoadingSpinner } from '../../lib/UI/LoadingSpinner';
+
+import { supabase } from '../../supabaseClient';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../store/uiStore';
+
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
-  // console.log('attendanceData', attendanceData);
+  // onRefresh: AttendanceManagement 컴포넌트의 데이터 fetch 함수(onFetchMemberList()).
+  console.log('attendanceData', attendanceData);
+
+  const isLoading = useUIStore(useShallow(state => state.isLoading)); // 로딩 스피너
+  const setLoading = useUIStore(useShallow(state => state.setLoading)); // 로딩 스피너
 
   /**
    * [MEMO] headerHours: 헤더(시), 하루를 시간 단위(1시간 단위)로 나누어 나타냄(0~23시).
@@ -70,10 +78,10 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
     const availableEndMinutes = useMemo(() => {
       const startMin = Number(selectedStartMinutes);
 
-      console.log('selectedStartHours', typeof selectedStartHours);
-      console.log('selectedEndHours', typeof selectedEndHours);
-      console.log('startMin', typeof startMin);
-      console.log('endMinutes', typeof endMinutes);
+      // console.log('selectedStartHours', typeof selectedStartHours);
+      // console.log('selectedEndHours', typeof selectedEndHours);
+      // console.log('startMin', typeof startMin);
+      // console.log('endMinutes', typeof endMinutes);
 
       if (selectedStartHours < selectedEndHours) {
         return endMinutes;
@@ -144,6 +152,9 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
 
     const onUpdateTime = async () => {
       // onUpdateTime(): 시작 시간, 종료 시간 수정 + 없으면 새로 스테이터스 추가
+
+      setLoading(true); // 로딩 스피너(true로)
+
       const { data: attendanceDateData, error: attendanceError } =
         await supabase
           .from('attendance_date')
@@ -184,6 +195,8 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
       }
       alert('데이터가 업데이트되었습니다.');
       onRefresh(); // 추가
+
+      setLoading(false); // 로딩 스피너(false로)
     };
 
     return (
@@ -307,6 +320,8 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
     const attendanceDateId = data.attendanceDateId;
 
     const deleteAttendance = async () => {
+      setLoading(true); // 로딩 스피너(true로)
+
       const { data, error } = await supabase
         .from('attendance_status')
         .delete()
@@ -323,6 +338,7 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
         setIsOpen(false);
         onRefresh(); // 추가
       }
+      setLoading(false); // 로딩 스피너(false로)
     };
 
     return (
@@ -356,285 +372,291 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
 
   AttendanceRowDelete.displayName = 'AttendanceRowDelete';
 
-  return (
-    <>
-      <div
-        // TableWrap
-        onClick={e => e.stopPropagation()}
-        style={{
-          width: '100%',
-          overflowX: 'auto',
-        }}
-      >
-        <table
-          // Tables
+  if (!attendanceData) return <LoadingSpinner isLoading={isLoading} />;
+  else if (isLoading) return <LoadingSpinner isLoading={isLoading} />;
+  else
+    return (
+      <>
+        <div
+          // TableWrap
+          onClick={e => e.stopPropagation()}
           style={{
-            backgroundColor: 'white',
             width: '100%',
-            tableLayout: 'fixed',
-            fontSize: '0.8rem',
+            overflowX: 'auto',
           }}
         >
-          <thead
-          // THead / Table
+          <table
+            // Tables
+            style={{
+              backgroundColor: 'white',
+              width: '100%',
+              tableLayout: 'fixed',
+              fontSize: '0.8rem',
+            }}
           >
-            <tr
-              // TrForHeader / TrHeader
-              style={{
-                display: 'tableCell',
-                verticalAlign: 'middle',
-                textAlign: 'start',
-                paddingLeft: '5px',
-                width: '50px',
-                height: '50px' /* 변경 전: '60px' */,
-                color: 'solid 1px #cdcdcd',
-                fontWeight: '400',
-              }}
+            <thead
+            // THead / Table
             >
-              <th
-                // ThEmployeeNameHeader / ThFirstHeader
+              <tr
+                // TrForHeader / TrHeader
                 style={{
-                  position: 'sticky' /* sticky 적용을 위한 코드 */,
-                  left: '0' /* sticky 적용을 위한 코드 */,
-                  width: '170px' /* 이름 너비 */,
-                  borderBottom: 'solid 1px #cdcdcd',
-                  backgroundColor: 'white' /* sticky 적용을 위한 코드 */,
-                  color: 'black',
+                  display: 'tableCell',
+                  verticalAlign: 'middle',
+                  textAlign: 'start',
+                  paddingLeft: '5px',
+                  width: '50px',
+                  height: '50px' /* 변경 전: '60px' */,
+                  color: 'solid 1px #cdcdcd',
+                  fontWeight: '400',
                 }}
               >
-                {/* 수강생 목록 영역 헤더 */}
-                {/* (수강생 목록) */}
-              </th>
+                <th
+                  // ThEmployeeNameHeader / ThFirstHeader
+                  style={{
+                    position: 'sticky' /* sticky 적용을 위한 코드 */,
+                    left: '0' /* sticky 적용을 위한 코드 */,
+                    width: '170px' /* 이름 너비 */,
+                    borderBottom: 'solid 1px #cdcdcd',
+                    backgroundColor: 'white' /* sticky 적용을 위한 코드 */,
+                    color: 'black',
+                  }}
+                >
+                  {/* 수강생 목록 영역 헤더 */}
+                  {/* (수강생 목록) */}
+                </th>
 
-              <th
-                // ThTotalWorkingTimeHeader / ThSecondHeader
-                style={{
-                  position: 'sticky' /* sticky 적용을 위한 코드 */,
-                  left: '170px' /* sticky 적용을 위한 코드 */,
-                  width: '80px' /* 수정/삭제 너비 */,
-                  borderBottom: 'solid 1px #cdcdcd',
-                  backgroundColor: 'white' /* sticky 적용을 위한 코드 */,
-                  color: 'black',
-                }}
-              >
-                {/* 수정/삭제 영역 헤더 */}
-                {/* (수정/삭제) */}
-              </th>
+                <th
+                  // ThTotalWorkingTimeHeader / ThSecondHeader
+                  style={{
+                    position: 'sticky' /* sticky 적용을 위한 코드 */,
+                    left: '170px' /* sticky 적용을 위한 코드 */,
+                    width: '80px' /* 수정/삭제 너비 */,
+                    borderBottom: 'solid 1px #cdcdcd',
+                    backgroundColor: 'white' /* sticky 적용을 위한 코드 */,
+                    color: 'black',
+                  }}
+                >
+                  {/* 수정/삭제 영역 헤더 */}
+                  {/* (수정/삭제) */}
+                </th>
 
-              {/* 0~23시 헤더 */}
-              {headerHours.map((data, idx) => {
-                return (
-                  <th
-                    // ThHourHeader / ThThirdHeader
-                    key={idx}
-                    colSpan={6}
-                    style={{
-                      display: 'tableCell' /* 테이블 셀 중앙정렬 */,
-                      verticalAlign: 'middle' /* 테이블 셀 중앙정렬 */,
-                      textAlign: 'start',
-                      paddingLeft: '5px',
-                      width: '50px' /* 시간 헤더(0~23) 너비 */,
-                      /*  height: '50px', -> 변경 전: '60px' */
-                      borderBottom: 'solid 1px #cdcdcd',
-                      // borderRight: idx === 23 ? 'none' : 'solid 3px orange',
-                      borderRight:
-                        idx === headerHours.length - 1
-                          ? 'none'
-                          : 'solid 1px #cdcdcd',
-                      color: 'black',
-                      fontWeight: '400',
-                      fontSize: '0.4rem',
-                    }}
-                  >
-                    {data.hour}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
+                {/* 0~23시 헤더 */}
+                {headerHours.map((data, idx) => {
+                  return (
+                    <th
+                      // ThHourHeader / ThThirdHeader
+                      key={idx}
+                      colSpan={6}
+                      style={{
+                        display: 'tableCell' /* 테이블 셀 중앙정렬 */,
+                        verticalAlign: 'middle' /* 테이블 셀 중앙정렬 */,
+                        textAlign: 'start',
+                        paddingLeft: '5px',
+                        width: '50px' /* 시간 헤더(0~23) 너비 */,
+                        /*  height: '50px', -> 변경 전: '60px' */
+                        borderBottom: 'solid 1px #cdcdcd',
+                        // borderRight: idx === 23 ? 'none' : 'solid 3px orange',
+                        borderRight:
+                          idx === headerHours.length - 1
+                            ? 'none'
+                            : 'solid 1px #cdcdcd',
+                        color: 'black',
+                        fontWeight: '400',
+                        fontSize: '0.4rem',
+                      }}
+                    >
+                      {data.hour}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
 
-          {/* 아래 tbody:
+            {/* 아래 tbody:
             - '분' 단위 셀을 화면에 적용하고자 넣은 것. ThHourHeader 셀 하나당 = '10분' 단위.
             - ThHourHeader 하나당(=시간당) ThTimeHeader 6개의 셀이 들어간다. 이를 위해 ThHourHeader에 colSpan={6}을 적용한 것.
           */}
 
-          <tbody
-            // THead
-            style={{
-              backgroundColor: 'white',
-            }}
-          >
-            <tr>
-              <th
-                // ThEmployeeNameHeader / ThNameHeader
-                style={{
-                  position: 'sticky' /* sticky 적용을 위한 코드 */,
-                  left: '0' /* sticky 적용을 위한 코드 */,
-                  width: '170px' /* [MEMO] 이름 너비 */,
-                  backgroundColor: 'red' /* sticky 적용을 위한 코드 */,
-                  color: 'black',
-                }}
-              />
-              <th
-                // ThTotalWorkingTimeHeader / ThInfoHeader
-                style={{
-                  position: 'sticky' /* sticky 적용을 위한 코드 */,
-                  width: '80px' /* [MEMO] 총 근무시간 너비 */,
-                  left: '170px' /* sticky 적용을 위한 코드, ThEmployeeNameHeader의 너비가 170px */,
-                  backgroundColor: 'pink' /* sticky 적용을 위한 코드 */,
-                }}
-              />
-              {headerMinutes.map((data, idx) => (
+            <tbody
+              // THead
+              style={{
+                backgroundColor: 'white',
+              }}
+            >
+              <tr>
                 <th
-                  // ThTimeHeader
-                  key={idx}
-                />
-              ))}
-            </tr>
-          </tbody>
-
-          <tbody>
-            {attendanceData.map((data, idx) => {
-              return (
-                <tr
-                  key={idx}
-                  // TrForBody
+                  // ThEmployeeNameHeader / ThNameHeader
                   style={{
-                    height:
-                      '50px' /* 바디에 있는 td(바디에 있는 셀들) 높이 -> 변경 전: '60px' */,
-                    backgroundColor: 'white',
+                    position: 'sticky' /* sticky 적용을 위한 코드 */,
+                    left: '0' /* sticky 적용을 위한 코드 */,
+                    width: '170px' /* [MEMO] 이름 너비 */,
+                    backgroundColor: 'red' /* sticky 적용을 위한 코드 */,
+                    color: 'black',
                   }}
-                >
-                  {/* 멤버 목록 영역 본문 */}
-                  <td
-                    // TdEmployeeName
+                />
+                <th
+                  // ThTotalWorkingTimeHeader / ThInfoHeader
+                  style={{
+                    position: 'sticky' /* sticky 적용을 위한 코드 */,
+                    width: '80px' /* [MEMO] 총 근무시간 너비 */,
+                    left: '170px' /* sticky 적용을 위한 코드, ThEmployeeNameHeader의 너비가 170px */,
+                    backgroundColor: 'pink' /* sticky 적용을 위한 코드 */,
+                  }}
+                />
+                {headerMinutes.map((data, idx) => (
+                  <th
+                    // ThTimeHeader
+                    key={idx}
+                  />
+                ))}
+              </tr>
+            </tbody>
+
+            <tbody>
+              {attendanceData.map((data, idx) => {
+                return (
+                  <tr
+                    key={idx}
+                    // TrForBody
                     style={{
-                      position: 'sticky' /* sticky 적용을 위한 코드 */,
-                      display: 'tableCell' /* 테이블 셀 중앙정렬 */,
-                      verticalAlign: 'middle' /* 테이블 셀 중앙정렬 */,
-                      textAlign:
-                        'start' /* text-align: center; */ /* 테이블 셀 중앙정렬 */,
-                      left: '0' /* sticky 적용을 위한 코드 */,
-                      paddingLeft: '30px',
-                      borderBottom: 'solid 1px #cdcdcd',
-                      backgroundColor: 'white' /* sticky 적용을 위한 코드 */,
-                      /* sticky 적용을 위한 코드, z-index 값을 주어야 스크롤을 움직일 때 상태바 위에 나타날 수 있음 */
-                      color: 'black',
-                      fontWeight: '500',
-                      zIndex: '1',
+                      height:
+                        '50px' /* 바디에 있는 td(바디에 있는 셀들) 높이 -> 변경 전: '60px' */,
+                      backgroundColor: 'white',
                     }}
                   >
-                    {data.name}
-                  </td>
-
-                  {/* 수정/삭제 영역 본문 */}
-                  <td
-                    //TdTotalWorkingTime
-                    style={{
-                      position: 'sticky' /* sticky 적용을 위한 코드 */,
-                      display: 'tableCell',
-                      verticalAlign: 'middle',
-                      textAlign: 'center',
-                      left: '170px' /* sticky 적용을 위한 코드, TdEmployeeName의 너비가 170px */,
-                      // border-bottom: solid 1px ${({ theme }) => theme.backgroundColor.shadowGray};
-                      borderBottom: 'solid 1px #cdcdcd',
-                      /* sticky 적용을 위한 코드 - border-right 주석 처리:
-                       * sticky 적용을 위해 주석처리 함.
-                       * sticky 미적용을 원할 경우, div 요소 내 border-right를 지운 후, 이곳에 border-right를 활성화 시키면 됨
-                       */
-                      // color: 'white', // 주석
-                      backgroundColor: '#f3f3f3' /* sticky 적용을 위한 코드 */,
-                      fontWeight: '500',
-                      /* sticky 적용을 위한 코드, z-index 값을 주어야 스크롤을 움직일 때 상태바 위에 나타날 수 있음 */
-                      zIndex: '1',
-                    }}
-                  >
-                    {/* 수정 및 삭제 버튼/모달 */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <div>
-                        <AttendanceRow data={data} />
-                      </div>
-                      <div style={{ marginLeft: '0.1rem' }}>
-                        <AttendanceRowDelete data={data} />
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* 데이터 UI 영역 (상태바 영역) */}
-                  {data.oneDayData.map((data, idx) => (
+                    {/* 멤버 목록 영역 본문 */}
                     <td
-                      // TdTimeInfo
-                      key={idx}
+                      // TdEmployeeName
                       style={{
+                        position: 'sticky' /* sticky 적용을 위한 코드 */,
+                        display: 'tableCell' /* 테이블 셀 중앙정렬 */,
+                        verticalAlign: 'middle' /* 테이블 셀 중앙정렬 */,
+                        textAlign:
+                          'start' /* text-align: center; */ /* 테이블 셀 중앙정렬 */,
+                        left: '0' /* sticky 적용을 위한 코드 */,
+                        paddingLeft: '30px',
                         borderBottom: 'solid 1px #cdcdcd',
+                        backgroundColor: 'white' /* sticky 적용을 위한 코드 */,
+                        /* sticky 적용을 위한 코드, z-index 값을 주어야 스크롤을 움직일 때 상태바 위에 나타날 수 있음 */
+                        color: 'black',
+                        fontWeight: '500',
+                        zIndex: '1',
                       }}
                     >
+                      {data.name}
+                    </td>
+
+                    {/* 수정/삭제 영역 본문 */}
+                    <td
+                      //TdTotalWorkingTime
+                      style={{
+                        position: 'sticky' /* sticky 적용을 위한 코드 */,
+                        display: 'tableCell',
+                        verticalAlign: 'middle',
+                        textAlign: 'center',
+                        left: '170px' /* sticky 적용을 위한 코드, TdEmployeeName의 너비가 170px */,
+                        // border-bottom: solid 1px ${({ theme }) => theme.backgroundColor.shadowGray};
+                        borderBottom: 'solid 1px #cdcdcd',
+                        /* sticky 적용을 위한 코드 - border-right 주석 처리:
+                         * sticky 적용을 위해 주석처리 함.
+                         * sticky 미적용을 원할 경우, div 요소 내 border-right를 지운 후, 이곳에 border-right를 활성화 시키면 됨
+                         */
+                        // color: 'white', // 주석
+                        backgroundColor:
+                          '#f3f3f3' /* sticky 적용을 위한 코드 */,
+                        fontWeight: '500',
+                        /* sticky 적용을 위한 코드, z-index 값을 주어야 스크롤을 움직일 때 상태바 위에 나타날 수 있음 */
+                        zIndex: '1',
+                      }}
+                    >
+                      {/* 수정 및 삭제 버튼/모달 */}
                       <div
-                        // StatusBarSection
                         style={{
-                          display: 'flex' /* [MEMO] 색상바 중앙정렬 */,
-                          flexDirection: 'column' /* [MEMO] 색상바 중앙정렬 */,
-                          justifyContent: 'center' /* [MEMO] 색상바 중앙정렬 */,
-                          width: '100%',
-                          height:
-                            '50px' /* 색상바를 포함하고 있는 셀 높이 -> 변경 전: '60px' */,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>
+                          <AttendanceRow data={data} />
+                        </div>
+                        <div style={{ marginLeft: '0.1rem' }}>
+                          <AttendanceRowDelete data={data} />
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* 데이터 UI 영역 (상태바 영역) */}
+                    {data.oneDayData.map((data, idx) => (
+                      <td
+                        // TdTimeInfo
+                        key={idx}
+                        style={{
+                          borderBottom: 'solid 1px #cdcdcd',
                         }}
                       >
                         <div
-                          // StatusBarWrap
+                          // StatusBarSection
                           style={{
-                            position: 'relative',
+                            display: 'flex' /* [MEMO] 색상바 중앙정렬 */,
+                            flexDirection:
+                              'column' /* [MEMO] 색상바 중앙정렬 */,
+                            justifyContent:
+                              'center' /* [MEMO] 색상바 중앙정렬 */,
                             width: '100%',
+                            height:
+                              '50px' /* 색상바를 포함하고 있는 셀 높이 -> 변경 전: '60px' */,
                           }}
                         >
                           <div
-                            // StatusBarWrap에 속한 첫번째 안쪽 div
+                            // StatusBarWrap
                             style={{
                               position: 'relative',
                               width: '100%',
-                              height:
-                                '30px' /* [MEMO] 색상바 높이 -> 변경 전: '320px' */,
-                              backgroundColor: data?.statusColor ?? '',
                             }}
                           >
                             <div
-                              // StatusBarWrap에 속한 가장 안쪽 div
+                              // StatusBarWrap에 속한 첫번째 안쪽 div
                               style={{
                                 position: 'relative',
                                 width: '100%',
                                 height:
-                                  '30px' /* [MEMO] 색상바 높이 -> 변경 전: '320px'  */,
-
-                                /* [MEMO] 색상바 상태 텍스트 스타일 ->  아래부터가 가장 안쪽 div스타일 적용*/
-                                display: 'tableCell',
-                                verticalAlign: 'middle',
-                                textAlign: 'start',
-                                paddingLeft: '5px', // [MEMO] 상태바 텍스트 왼쪽 여백
+                                  '30px' /* [MEMO] 색상바 높이 -> 변경 전: '320px' */,
+                                backgroundColor: data?.statusColor ?? '',
                               }}
                             >
-                              {/* 각 상태에 따른, 상태바 부분 */}
-                              {data?.dataName === '등원' ? <div /> : <div />}
+                              <div
+                                // StatusBarWrap에 속한 가장 안쪽 div
+                                style={{
+                                  position: 'relative',
+                                  width: '100%',
+                                  height:
+                                    '30px' /* [MEMO] 색상바 높이 -> 변경 전: '320px'  */,
+
+                                  /* [MEMO] 색상바 상태 텍스트 스타일 ->  아래부터가 가장 안쪽 div스타일 적용*/
+                                  display: 'tableCell',
+                                  verticalAlign: 'middle',
+                                  textAlign: 'start',
+                                  paddingLeft: '5px', // [MEMO] 상태바 텍스트 왼쪽 여백
+                                }}
+                              >
+                                {/* 각 상태에 따른, 상태바 부분 */}
+                                {data?.dataName === '등원' ? <div /> : <div />}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* 아래 p태그: 상태바 호버시 나타나는 작은 말풍선 */}
-                        <p />
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
+                          {/* 아래 p태그: 상태바 호버시 나타나는 작은 말풍선 */}
+                          <p />
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </>
+    );
 };
