@@ -152,6 +152,12 @@ export const Contents = () => {
     const [memberName, setMemberName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
 
+    const handlePhoneNumberChange = e => {
+      const onlyNumber = e.target.value.replace(/[^0-9]/g, ''); // 숫자 입력 외 제거
+      // 자바스크립트의 <input> 요소의 value는 항상 문자열(string) 타입으로 반환됨
+      setPhoneNumber(onlyNumber);
+    };
+
     // [TAG] onEditMember(): 수강생 정보 수정
     const onEditMember = async () => {
       if (!selectedRow) return;
@@ -189,7 +195,7 @@ export const Contents = () => {
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div>이름</div>
                 <input
-                  placeholder="이름"
+                  placeholder="이름을 입력해 주세요"
                   onChange={e => setMemberName(e.target.value)}
                 />
               </div>
@@ -197,8 +203,10 @@ export const Contents = () => {
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div>연락처</div>
                 <input
-                  placeholder="연락처"
-                  onChange={e => setPhoneNumber(e.target.value)}
+                  placeholder="숫자만 입력해 주세요"
+                  value={phoneNumber}
+                  // onChange={e => setPhoneNumber(e.target.value)}
+                  onChange={e => handlePhoneNumberChange(e)}
                 />
               </div>
 
