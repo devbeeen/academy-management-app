@@ -11,6 +11,8 @@ import { Button } from '../../lib/UI/Button';
 
 import { DataGrid } from '@mui/x-data-grid'; // MUI 그리드
 import Paper from '@mui/material/Paper'; // MUI 그리드
+
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export const Contents = () => {
@@ -22,7 +24,10 @@ export const Contents = () => {
   const currentCompanyID = fetchUserStore.companyID;
 
   /*
-  // 수정/추가 및 삭제 기능 성공시, onFetchMemberList()(데이터 불러오기)를 실행시키고자 useEffect에서 별도로 뺌
+  // 수정/추가 및 삭제 기능 성공시,
+  // 자동으로 onFetchMemberList()(데이터 불러오기)를 실행시키고자
+  // (=onFetchMemberList()를 별도로 활용하고자)
+  // useEffect에서 별도로 뺌
   useEffect(() => {
     const onFetchMemberList = async () => {
       const { data, error } = await supabase
@@ -59,7 +64,7 @@ export const Contents = () => {
     }
   };
 
-  // console.log('MemberList-memberList', memberList);
+  console.log('MemberList-memberList', memberList);
 
   const rows = memberList.map((member, idx) => ({
     id: idx,
@@ -71,15 +76,15 @@ export const Contents = () => {
     {
       field: 'delete', // 가상 필드 이름
       headerName: '', // 컬럼 헤더 이름
-      width: 60,
-      align: 'center',
+      // width: 80,
+      // align: 'center',
       // headerAlign: 'center', // 헤더 텍스트 정렬
       // filterable: false,
       disableColumnMenu: true,
       renderCell: (
-        params, // params에는 해당 행 데이터가 들어있음
+        params, // params에는 해당 행의 데이터가 들어있음
       ) => (
-        <button
+        <div
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -87,18 +92,64 @@ export const Contents = () => {
             width: '100%', // 셀 전체 넓이 사용
             height: '100%', // 셀 높이 전체 사용
             boxSizing: 'border-box', // height 100% 정확히 맞춤
-            fontSize: '1.25rem',
-            cursor: 'pointer',
+            // backgroundColor: '#f3f3f3',
           }}
-          onClick={() => handleDelete(params.row)}
         >
-          <DeleteRoundedIcon fontSize="inherit" />
-        </button>
+          {/* ----- */}
+          <Button handleClick={() => handleEdit(params.row)} fontSize={'1rem'}>
+            <EditRoundedIcon fontSize="inherit" />
+          </Button>
+          {/* ----- */}
+
+          <div style={{ marginLeft: '0.1rem' }}>
+            <Button
+              handleClick={() => handleDelete(params.row)}
+              fontSize={'1rem'}
+            >
+              <DeleteRoundedIcon fontSize="inherit" />
+            </Button>
+          </div>
+        </div>
       ),
     },
-    { field: 'id', headerName: 'ID', width: 80 },
+    // {
+    //   field: 'delete', // 가상 필드 이름
+    //   headerName: '', // 컬럼 헤더 이름
+    //   width: 40,
+    //   // align: 'center',
+    //   // headerAlign: 'center', // 헤더 텍스트 정렬
+    //   // filterable: false,
+    //   disableColumnMenu: true,
+    //   renderCell: (
+    //     params, // params에는 해당 행의 데이터가 들어있음
+    //   ) => (
+    //       <button
+    //         style={{
+    //           display: 'flex',
+    //           justifyContent: 'center',
+    //           alignItems: 'center',
+    //           width: '100%', // 셀 전체 넓이 사용
+    //           height: '100%', // 셀 높이 전체 사용
+    //           boxSizing: 'border-box', // height 100% 정확히 맞춤
+    //           fontSize: '1.25rem',
+    //           cursor: 'pointer',
+    //         }}
+    //         onClick={() => handleDelete(params.row)}
+    //       >
+    //         <DeleteRoundedIcon fontSize="inherit" />
+    //       </button>
+    //   ),
+    // },
+    { field: 'id', headerName: '순서', width: 80 },
     { field: 'name', headerName: '이름', width: 140 },
+    { field: 'phoneNumber', headerName: '연락처', width: 140 },
   ];
+
+  const handleEdit = row => {
+    console.log('params: ', row);
+    setSelectedRow(row);
+    // setIsDeleteOpen(true);
+  };
 
   const handleDelete = row => {
     // console.log('params: ', row);
@@ -124,7 +175,7 @@ export const Contents = () => {
     }
   };
 
-  const AddMemberModal = memo(({ data }) => {
+  const AddMemberModal = memo(() => {
     const [isOpen, setIsOpen] = useState(false);
     const [nameValue, setNameValue] = useState(); // 수강생 이름 값
 
