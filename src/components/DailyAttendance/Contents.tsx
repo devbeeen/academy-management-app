@@ -58,7 +58,10 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
     const endHours = Array.from({ length: 24 }, (_, index) => index);
     const endMinutes = Array.from({ length: 60 }, (_, index) => index);
 
-    // 시작 시간에 대응하는, 종료 시간 드롭박스 배열(시간, 분)
+    /**
+     * 시작 시간에 대응하는, 종료 시간 드롭박스 배열(시간, 분)
+     * 시작 시간과 동일한 경우가 없도록, 종료시간은 시작 시간보다 1분 이상 많도록 유지
+     */
     const availableEndHours = useMemo(() => {
       return endHours.slice(selectedStartHours);
     }, [selectedStartHours]);
@@ -66,6 +69,22 @@ export const Contents = ({ attendanceData, year, month, date, onRefresh }) => {
     const availableEndMinutes = useMemo(() => {
       const startMin = Number(selectedStartMinutes);
 
+      console.log('selectedStartHours', typeof selectedStartHours);
+      console.log('selectedEndHours', typeof selectedEndHours);
+      console.log('startMin', typeof startMin);
+      console.log('endMinutes', typeof endMinutes);
+
+      if (selectedStartHours < selectedEndHours) {
+        return endMinutes;
+      }
+      /*
+        else if (
+        selectedStartHours === selectedEndHours &&
+        startMin > Number(endMinutes)
+      ) {
+        return endMinutes.slice(startMin + 1);
+      }
+        */
       if (selectedStartHours < selectedEndHours) {
         return endMinutes;
       } else {

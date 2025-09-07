@@ -14,7 +14,8 @@
 # etc
 .eslintcache
 
-/public/data
+# 샘플, 테스트용 데이터
+/public/sample
 
 # tailwind 관련 (임시, 마이그레이션 전까지)
 postcss.config.js
